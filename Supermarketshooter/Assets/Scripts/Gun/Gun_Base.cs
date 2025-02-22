@@ -1,19 +1,141 @@
-using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using System.Collections.Generic;
 
 public class Gun_Base : MonoBehaviour
 {
+    // Bullet settings
     public GameObject bulletPrefab;
-    public Transform firePoint;
-    public int magazineSize = 10;
-    public float fireRate = 0.2f;
+    public float shootForce, upwardForce;
 
+    // Gun settings
+    public float timeBetweenShooting, spread, reloadTime, timeBetweenShots;
+    public int magazineSize, bulletsPerTap;
+    public bool allowButtonHold;
+
+    // Internal tracking variables
+    private int bulletsLeft, bulletsShot;
+    private bool shooting, readyToShoot, reloading;
     private List<GameObject> bulletPool = new List<GameObject>();
-    private float nextFireTime = 0f;
 
-    void Start()
+    // Recoil settings
+    public Rigidbody playerRb;
+    public float recoilForce;
+
+    // References
+    public Camera fpsCam;
+    public Transform attackPoint;
+    public GameObject muzzleFlash;
+    public TextMeshProUGUI ammunitionDisplay;
+    public bool allowInvoke = true;
+
+    private void Awake()
     {
-        // Preload magazine with inactive bullets
+        // Initialize bullets and set gun to ready state
+        bulletsLeft = magazineSize;
+        readyToShoot = true;
+        PreloadBullets();
+    }
+
+    private void Update()
+    {
+        HandleInput();
+
+        // Update ammo UI if available
+        if (ammunitionDisplay != null)
+            ammunitionDisplay.SetText(bulletsLeft / bulletsPerTap + " / " + magazineSize / bulletsPerTap);
+    }
+
+    private void HandleInput()
+    {
+        // Check for shooting input
+        shooting = allowButtonHold ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
+
+        // Handle reloading input
+        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) Reload();
+
+        // Handle shooting
+        if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+        {
+            bulletsShot = 0;
+            Shoot();
+        }
+    }
+
+    private void Shoot()
+    {
+        readyToShoot = false;
+
+        // Calculate bullet direction with spread
+        Vector3 directionWithSpread = CalculateSpreadDirection();
+
+        // Retrieve a bullet from the pool
+        GameObject bullet = GetBullet();
+        bullet.transform.position = attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.SetActive(true);
+
+        // Apply force to bullet
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
+
+        // Instantiate muzzle flash if available
+        if (muzzleFlash != null)
+            Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+
+        // Reduce ammo count
+        bulletsLeft--;
+        bulletsShot++;
+
+        // Handle recoil and shot reset
+        if (allowInvoke)
+        {
+            Invoke("ResetShot", timeBetweenShooting);
+            allowInvoke = false;
+            playerRb.AddForce(-directionWithSpread.normalized * recoilForce, ForceMode.Impulse);
+        }
+
+        // Handle burst shots
+        if (bulletsShot < bulletsPerTap && bulletsLeft > 0)
+            Invoke("Shoot", timeBetweenShots);
+    }
+
+    private Vector3 CalculateSpreadDirection()
+    {
+        // Determine base bullet trajectory
+        Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit) ? hit.point : ray.GetPoint(75);
+        Vector3 directionWithoutSpread = targetPoint - attackPoint.position;
+
+        // Apply random spread
+        return directionWithoutSpread + new Vector3(Random.Range(-spread, spread), Random.Range(-spread, spread), 0);
+    }
+
+    private void ResetShot()
+    {
+        // Allow shooting again
+        readyToShoot = true;
+        allowInvoke = true;
+    }
+
+    private void Reload()
+    {
+        // Start reload sequence
+        reloading = true;
+        Invoke("ReloadFinished", reloadTime);
+    }
+
+    private void ReloadFinished()
+    {
+        // Refill magazine
+        bulletsLeft = magazineSize;
+        reloading = false;
+    }
+
+    private void PreloadBullets()
+    {
+        // Create a pool of bullets
         for (int i = 0; i < magazineSize; i++)
         {
             GameObject bullet = Instantiate(bulletPrefab);
@@ -22,41 +144,18 @@ public class Gun_Base : MonoBehaviour
         }
     }
 
-    void Update()
+    private GameObject GetBullet()
     {
-        if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + fireRate;
-            Fire();
-        }
-    }
-
-    void Fire()
-    {
-        GameObject bullet = GetAvailableBullet();
-        bullet.transform.position = firePoint.position;
-        bullet.transform.rotation = firePoint.rotation;
-        bullet.SetActive(true);
-
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.velocity = firePoint.forward * 20f; // Adjust speed as needed
-    }
-
-    GameObject GetAvailableBullet()
-    {
+        // Retrieve an inactive bullet from the pool
         foreach (GameObject bullet in bulletPool)
         {
             if (!bullet.activeInHierarchy)
-            {
                 return bullet;
-            }
         }
 
-        // If no bullets available, create a new one
+        // If all bullets are in use, create a new one
         GameObject newBullet = Instantiate(bulletPrefab);
         bulletPool.Add(newBullet);
         return newBullet;
     }
-}
-
 }
