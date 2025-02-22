@@ -6,7 +6,7 @@ using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using System.Threading.Tasks; // tasks
 
-public class SessionManager //: Singleton<SessionManager>
+public class SessionManager : MonoBehaviour //Singleton<SessionManager>
 {
     ISession activeSession;
 
@@ -37,6 +37,7 @@ public class SessionManager //: Singleton<SessionManager>
         {
             Debug.Log(e);
         }
+        StartSessionAsHost();
     }
 
     // Properties of each player currently only the player name
