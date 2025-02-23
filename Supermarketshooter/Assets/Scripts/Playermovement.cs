@@ -43,8 +43,10 @@ public class Playermovement : MonoBehaviour
     Rigidbody rb;
     public MovementState state;
 
+    private PlayerCam playerCamScript;
+    public MoveCamera moveCameraScript;
 
-
+    private Transform cameraPos;
     public enum MovementState
     {
         walking,
@@ -58,11 +60,38 @@ public class Playermovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+
+
+        cameraPos = transform.Find("CameraPos");
+        if (cameraPos == null)
+        {
+            Debug.LogWarning("not found");
+            return;
+        }
+        if (playerCamScript == null)
+        {
+            playerCamScript = Object.FindFirstObjectByType<PlayerCam>();
+            if (playerCamScript == null)
+            {
+                Debug.LogWarning("no script");
+                return;
+            }
+        }
+        playerCamScript.orientation = orientation;
+        if (moveCameraScript == null)
+        {
+            moveCameraScript = Object.FindFirstObjectByType<MoveCamera>();
+            if (moveCameraScript == null)
+            {
+                Debug.LogWarning("no script");
+                return;
+            }
+        }
+        moveCameraScript.cameraPosition = cameraPos;
     }
 
         public void Update()
     {
-
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
         Debug.Log(grounded);
         wasGrounded = grounded;
