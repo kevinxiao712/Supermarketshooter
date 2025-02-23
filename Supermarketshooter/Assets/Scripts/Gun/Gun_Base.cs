@@ -17,6 +17,9 @@ public class Gun_Base : MonoBehaviour
     private int bulletsLeft, bulletsShot;
     private bool shooting, readyToShoot, reloading;
     private List<GameObject> bulletPool = new List<GameObject>();
+    private List<GameObject> gunParts = new List<GameObject>();
+    private List<GameObject> inventory = new List<GameObject>();
+    [SerializeField] Transform[] gunPartLocations;
 
     // Recoil settings
     public Rigidbody playerRb;
@@ -52,14 +55,26 @@ public class Gun_Base : MonoBehaviour
         shooting = allowButtonHold ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
 
         // Handle reloading input
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
-        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) Reload();
+        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) SlideParts();
+        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) SlideParts();
 
         // Handle shooting
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
         {
             bulletsShot = 0;
             Shoot();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Gun_Piece_Base gunPart = hit.collider.GetComponent<Gun_Piece_Base>();
+                if (gunPart != null)
+                {
+                 PickupGunPart(gunPart.gameObject);
+                }
+            }
         }
     }
 
@@ -119,10 +134,33 @@ public class Gun_Base : MonoBehaviour
         allowInvoke = true;
     }
 
-    private void Reload()
+    private void SlideParts( )
     {
-        // Start reload sequence
+       
+        if (gunParts.Count == 3 && inventory.Count > 0)
+        {
+            // Remove oldest gun part from the current list
+            Destroy(gunParts[2]);
+
+            gunParts.Add(inventory[0]);
+            inventory[0].gameObject.SetActive(true);
+            inventory.RemoveAt(0);
+
+        }else
+        {
+            gunParts.Add(inventory[0]);
+
+        }
+
         reloading = true;
+        for (int i = 0; i < gunParts.Count; i++)
+        {
+            
+            gunParts[i].transform.position = gunPartLocations[i].position;
+            gunParts[i].transform.parent = this.transform;
+            gunParts[i].SetActive(true);
+            gunParts[i].GetComponent<Gun_Piece_Base>().UpdateState(i);
+        }
         Invoke("ReloadFinished", reloadTime);
     }
 
@@ -157,5 +195,17 @@ public class Gun_Base : MonoBehaviour
         GameObject newBullet = Instantiate(bulletPrefab);
         bulletPool.Add(newBullet);
         return newBullet;
+    }
+
+    public void PickupGunPart(GameObject gunPart)
+    {
+        inventory.Add(gunPart);
+        gunPart.GetComponent<Gun_Piece_Base>().gun = this;
+        gunPart.SetActive(false);
+
+        if (gunParts.Count<3)
+            SlideParts();
+        
+          
     }
 }
