@@ -37,6 +37,11 @@ public class Gun_Base : MonoBehaviour
         PreloadBullets();
     }
 
+    private void Start()
+    {
+        fpsCam = Camera.main;
+    }
+
     private void Update()
     {
         HandleInput();

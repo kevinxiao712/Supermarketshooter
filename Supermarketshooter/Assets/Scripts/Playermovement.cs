@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Netcode;
 
-public class Playermovement : MonoBehaviour
+public class Playermovement : NetworkBehaviour
 {
 
-    
     [Header("Movement")]
     private float MoveSpeed;
     public float walkSpeed;
@@ -90,8 +90,12 @@ public class Playermovement : MonoBehaviour
         moveCameraScript.cameraPosition = cameraPos;
     }
 
-        public void Update()
+    public void Update()
     {
+        // only allow the active player to control this object
+        if (!IsOwner) return;
+
+
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
         Debug.Log(grounded);
         wasGrounded = grounded;
@@ -119,15 +123,15 @@ public class Playermovement : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
-    
+
     public void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         if (OnSlope() && !exitingSlope)
         {
             rb.AddForce(GetSlopeMoveDirection() * MoveSpeed * 20f, ForceMode.Force);
-            if(rb.linearVelocity.y > 0)
-                rb.AddForce(Vector3.down * 80f , ForceMode.Force);
+            if (rb.linearVelocity.y > 0)
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
         if (grounded)
             rb.AddForce(moveDirection.normalized * MoveSpeed * 10f, ForceMode.Force);
@@ -191,15 +195,15 @@ public class Playermovement : MonoBehaviour
 
     private void StateHandler()
     {
-        if(grounded && Input.GetKey(sprintKey))
+        if (grounded && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
             MoveSpeed = sprintSpeed;
         }
-        else if(grounded)
+        else if (grounded)
         {
             state = MovementState.walking;
-            MoveSpeed= walkSpeed;
+            MoveSpeed = walkSpeed;
         }
         else
         {
