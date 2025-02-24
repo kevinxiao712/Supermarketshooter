@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Netcode;
 
-public class Playermovement : MonoBehaviour
+public class Playermovement : NetworkBehaviour
 {
 
-    
     [Header("Movement")]
     private float MoveSpeed;
     public float walkSpeed;
@@ -46,6 +46,8 @@ public class Playermovement : MonoBehaviour
     private PlayerCam playerCamScript;
     public MoveCamera moveCameraScript;
 
+    [SerializeField] Camera fpsCam;
+
     private Transform cameraPos;
     public enum MovementState
     {
@@ -61,37 +63,58 @@ public class Playermovement : MonoBehaviour
         rb.freezeRotation = true;
         readyToJump = true;
 
-
-        cameraPos = transform.Find("CameraPos");
-        if (cameraPos == null)
+        // checks if this player is the local one anything that would be set for
+        // only this player should be set in this statement(camera)
+        if (IsLocalPlayer)
         {
-            Debug.LogWarning("not found");
-            return;
-        }
-        if (playerCamScript == null)
-        {
-            playerCamScript = Object.FindFirstObjectByType<PlayerCam>();
+            fpsCam.gameObject.SetActive(true);
+            cameraPos = transform.Find("CameraPos");
+            if (cameraPos == null)
+            {
+                Debug.LogWarning("not found");
+                return;
+            }
             if (playerCamScript == null)
             {
-                Debug.LogWarning("no script");
-                return;
+                playerCamScript = Object.FindFirstObjectByType<PlayerCam>();
+                playerCamScript.enabled = true;
+                if (playerCamScript == null)
+                {
+                    Debug.LogWarning("no script");
+                    return;
+                }
             }
-        }
-        playerCamScript.orientation = orientation;
-        if (moveCameraScript == null)
-        {
-            moveCameraScript = Object.FindFirstObjectByType<MoveCamera>();
+            playerCamScript.orientation = orientation;
             if (moveCameraScript == null)
             {
-                Debug.LogWarning("no script");
-                return;
+                moveCameraScript = Object.FindFirstObjectByType<MoveCamera>();
+                if (moveCameraScript == null)
+                {
+                    Debug.LogWarning("no script");
+                    return;
+                }
             }
+            moveCameraScript.cameraPosition = cameraPos;
         }
-        moveCameraScript.cameraPosition = cameraPos;
+        else
+        {
+            fpsCam.gameObject.SetActive(false);
+        }
     }
 
-        public void Update()
+    public void OnEnable()
     {
+        if (IsLocalPlayer)
+        {
+            fpsCam.gameObject.SetActive(true);
+        }
+    }
+
+    public void Update()
+    {
+        // only allow the active player to control this object
+        if (!IsOwner) return;
+
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
         Debug.Log(grounded);
         wasGrounded = grounded;
@@ -119,15 +142,15 @@ public class Playermovement : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
-    
+
     public void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         if (OnSlope() && !exitingSlope)
         {
             rb.AddForce(GetSlopeMoveDirection() * MoveSpeed * 20f, ForceMode.Force);
-            if(rb.linearVelocity.y > 0)
-                rb.AddForce(Vector3.down * 80f , ForceMode.Force);
+            if (rb.linearVelocity.y > 0)
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
         if (grounded)
             rb.AddForce(moveDirection.normalized * MoveSpeed * 10f, ForceMode.Force);
@@ -191,15 +214,15 @@ public class Playermovement : MonoBehaviour
 
     private void StateHandler()
     {
-        if(grounded && Input.GetKey(sprintKey))
+        if (grounded && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
             MoveSpeed = sprintSpeed;
         }
-        else if(grounded)
+        else if (grounded)
         {
             state = MovementState.walking;
-            MoveSpeed= walkSpeed;
+            MoveSpeed = walkSpeed;
         }
         else
         {
