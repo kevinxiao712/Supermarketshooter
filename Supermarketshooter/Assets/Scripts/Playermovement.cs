@@ -64,7 +64,7 @@ public class Playermovement : NetworkBehaviour
         readyToJump = true;
 
         // checks if this player is the local one anything that would be set for
-        // only this player should be set in this statement(camera)
+        // only this player should be set in this statement(camera, orientation, etc)
         if (IsLocalPlayer)
         {
             fpsCam.gameObject.SetActive(true);
