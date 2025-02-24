@@ -330,7 +330,7 @@ MonoBehaviour:
   walkSpeed: 5
   sprintSpeed: 10
   groundDrag: 5
-  jumpforce: 5
+  jumpforce: 7
   jumpCooldown: 0.25
   airMultiplier: 0.4
   jumpKey: 32
