@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class Gun_Base : MonoBehaviour
 {
@@ -17,8 +18,8 @@ public class Gun_Base : MonoBehaviour
     private int bulletsLeft, bulletsShot;
     private bool shooting, readyToShoot, reloading;
     private List<GameObject> bulletPool = new List<GameObject>();
-    private List<GameObject> gunParts = new List<GameObject>();
-    private List<GameObject> inventory = new List<GameObject>();
+    public List<GameObject> gunParts = new List<GameObject>();
+    public List<GameObject> inventory = new List<GameObject>();
     [SerializeField] Transform[] gunPartLocations;
 
     // Recoil settings
@@ -31,7 +32,9 @@ public class Gun_Base : MonoBehaviour
     public GameObject muzzleFlash;
     public TextMeshProUGUI ammunitionDisplay;
     public bool allowInvoke = true;
-
+    public Material targetedMaterial;
+    public Material oldMaterial;
+    Gun_Piece_Base hoveredPart;
     private void Awake()
     {
         // Initialize bullets and set gun to ready state
@@ -42,11 +45,38 @@ public class Gun_Base : MonoBehaviour
 
     private void Update()
     {
+
+        HighlightPartOnHover();
         HandleInput();
 
         // Update ammo UI if available
         if (ammunitionDisplay != null)
             ammunitionDisplay.SetText(bulletsLeft / bulletsPerTap + " / " + magazineSize / bulletsPerTap);
+    }
+
+    public void HighlightPartOnHover()
+    {
+        Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.GetComponent<Gun_Piece_Base>()!=null)
+            {
+                if (hoveredPart == null )
+                {
+                    hoveredPart = hit.collider.GetComponent<Gun_Piece_Base>();
+                    oldMaterial = hoveredPart.gameObject.GetComponent<MeshRenderer>().material;
+                    hoveredPart.gameObject.GetComponent<MeshRenderer>().material = targetedMaterial;
+                }
+            }
+            else if (hoveredPart != null)
+            {
+
+                hoveredPart.gameObject.GetComponent<MeshRenderer>().material = oldMaterial;
+                hoveredPart = null;
+            }
+
+        }
+    
     }
 
     private void HandleInput()
@@ -137,31 +167,34 @@ public class Gun_Base : MonoBehaviour
     private void SlideParts( )
     {
        
-        if (gunParts.Count == 3 && inventory.Count > 0)
+        if ( inventory.Count > 0)
         {
-            // Remove oldest gun part from the current list
-            Destroy(gunParts[2]);
-
+            if (gunParts.Count == 3)
+            {
+                GameObject removedGunPart = gunParts[0];
+                gunParts.RemoveAt(0);
+                // Remove oldest gun part from the current list
+                Destroy(removedGunPart);
+            }
             gunParts.Add(inventory[0]);
             inventory[0].gameObject.SetActive(true);
             inventory.RemoveAt(0);
 
-        }else
-        {
-            gunParts.Add(inventory[0]);
+            reloading = true;
+            for (int i = 0; i < gunParts.Count; i++)
+            {
+
+                gunParts[i].transform.position = gunPartLocations[i].position;
+                gunParts[i].transform.parent = this.transform;
+                gunParts[i].SetActive(true);
+                gunParts[i].GetComponent<Gun_Piece_Base>().UpdateState(i);
+            }
 
         }
 
-        reloading = true;
-        for (int i = 0; i < gunParts.Count; i++)
-        {
-            
-            gunParts[i].transform.position = gunPartLocations[i].position;
-            gunParts[i].transform.parent = this.transform;
-            gunParts[i].SetActive(true);
-            gunParts[i].GetComponent<Gun_Piece_Base>().UpdateState(i);
-        }
         Invoke("ReloadFinished", reloadTime);
+
+
     }
 
     private void ReloadFinished()
