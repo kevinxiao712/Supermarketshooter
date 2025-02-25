@@ -270,7 +270,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5829421436210421715}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 2
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -327,12 +327,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  MoveSpeed: 0
   walkSpeed: 5
   sprintSpeed: 10
   groundDrag: 5
-  jumpforce: 7
+  jumpforce: 20
   jumpCooldown: 0.25
-  airMultiplier: 0.4
+  airMultiplier: 0.1
   jumpKey: 32
   sprintKey: 304
   playerHeight: 2
@@ -342,8 +343,11 @@ MonoBehaviour:
   orientation: {fileID: 5355502365269865072}
   maxSlopeAngle: 45
   state: 0
+  playerCamScript: {fileID: 0}
   moveCameraScript: {fileID: 0}
   fpsCam: {fileID: 2736411270362467367}
+  cameraPos: {fileID: 0}
+  ui: {fileID: 0}
   gun: {fileID: 8466174746855133879}
 --- !u!114 &3771365470699058284
 MonoBehaviour:

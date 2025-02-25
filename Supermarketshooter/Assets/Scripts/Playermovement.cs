@@ -6,7 +6,7 @@ public class Playermovement : NetworkBehaviour
 {
 
     [Header("Movement")]
-    private float MoveSpeed;
+    public float MoveSpeed;
     public float walkSpeed;
     public float sprintSpeed;
     public float groundDrag;
@@ -34,7 +34,9 @@ public class Playermovement : NetworkBehaviour
     private float maxFallSpeed = 0f;
     private bool wasGrounded = true;
 
-
+    [Header("Double Jump")]
+    public int maxJumps = 2;            // How many times we can jump before touching the ground
+    private int jumpCount = 0;
 
     [Header("Slope Hnadling")]
     public float maxSlopeAngle;
@@ -43,16 +45,25 @@ public class Playermovement : NetworkBehaviour
     Rigidbody rb;
     public MovementState state;
 
-    private PlayerCam playerCamScript;
+    public PlayerCam playerCamScript;
     public MoveCamera moveCameraScript;
 
     [SerializeField] Camera fpsCam;
 
-    private Transform cameraPos;
+    public Transform cameraPos;
 
-    private GameObject ui;
+    public GameObject ui;
 
     public Gun_Base gun;
+
+
+
+    [Header("Coyote Time")]
+    public float coyoteTime = 0.2f;          // Duration to still allow jumping after stepping off
+    private float coyoteTimeCounter;
+
+
+
     public enum MovementState
     {
         walking,
@@ -122,8 +133,23 @@ public class Playermovement : NetworkBehaviour
         if (!IsOwner) return;
 
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
-        Debug.Log(grounded);
+
+
+        if (grounded)
+        {
+            jumpCount = 0;
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            // Decrease coyote time if not grounded
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
         wasGrounded = grounded;
+
+
+
         MyInput(); // adding hide ui to this
         MovePlayer();
         SpeedControl();
@@ -137,16 +163,24 @@ public class Playermovement : NetworkBehaviour
 
     }
 
-    private void MyInput()
+    public void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-        if (Input.GetKey(jumpKey) && readyToJump && grounded)
+
+
+
+        if (Input.GetKeyDown(jumpKey) && readyToJump && jumpCount < maxJumps && (grounded || coyoteTimeCounter > 0f))
         {
+            coyoteTimeCounter = 0f;
             readyToJump = false;
             Jump();
+            jumpCount++; // We used a jump
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+
+
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ui.SetActive(!ui.activeInHierarchy);
@@ -171,7 +205,7 @@ public class Playermovement : NetworkBehaviour
 
     }
 
-    private void SpeedControl()
+    public void SpeedControl()
     {
         if (OnSlope() && !exitingSlope)
         {
@@ -190,7 +224,7 @@ public class Playermovement : NetworkBehaviour
     }
 
 
-    private void Jump()
+    public void Jump()
     {
         exitingSlope = true;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
@@ -198,14 +232,14 @@ public class Playermovement : NetworkBehaviour
     }
 
 
-    private void ResetJump()
+    public void ResetJump()
     {
         readyToJump = true;
         exitingSlope = false;
     }
 
 
-    private bool OnSlope()
+    public bool OnSlope()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out slopHit, playerHeight * 0.5f + 0.3f))
         {
@@ -216,13 +250,13 @@ public class Playermovement : NetworkBehaviour
     }
 
 
-    private Vector3 GetSlopeMoveDirection()
+    public Vector3 GetSlopeMoveDirection()
     {
         return Vector3.ProjectOnPlane(moveDirection, slopHit.normal).normalized;
     }
 
 
-    private void StateHandler()
+    public void StateHandler()
     {
         if (grounded && Input.GetKey(sprintKey))
         {
