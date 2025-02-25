@@ -344,6 +344,7 @@ MonoBehaviour:
   state: 0
   moveCameraScript: {fileID: 0}
   fpsCam: {fileID: 2736411270362467367}
+  gun: {fileID: 8466174746855133879}
 --- !u!114 &3771365470699058284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,3 +653,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 895812339826771371, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
   m_PrefabInstance: {fileID: 172057819153551497}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8466174746855133879 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+  m_PrefabInstance: {fileID: 172057819153551497}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6f6a91627c6787439c76da08bcb89fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

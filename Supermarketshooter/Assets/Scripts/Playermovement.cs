@@ -51,6 +51,8 @@ public class Playermovement : NetworkBehaviour
     private Transform cameraPos;
 
     private GameObject ui;
+
+    public Gun_Base gun;
     public enum MovementState
     {
         walking,
@@ -98,6 +100,7 @@ public class Playermovement : NetworkBehaviour
                 }
             }
             moveCameraScript.cameraPosition = cameraPos;
+            gun.fpsCam = fpsCam;
         }
         else
         {
