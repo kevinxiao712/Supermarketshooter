@@ -23,13 +23,13 @@ public class Gun_Piece_Base : MonoBehaviour
     {
         switch (position)
         {
-            case 0:
+            case 2:
                 currentState = GunPieceState.Forward;
                 break;
             case 1:
                 currentState = GunPieceState.Mid;
                 break;
-            case 2:
+            case 0:
                 currentState = GunPieceState.Back;
                 break;
             default:

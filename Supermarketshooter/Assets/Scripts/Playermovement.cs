@@ -65,8 +65,8 @@ public class Playermovement : NetworkBehaviour
 
         // checks if this player is the local one anything that would be set for
         // only this player should be set in this statement(camera, orientation, etc)
-        if (IsLocalPlayer)
-        {
+       // if (IsLocalPlayer)
+        //{
             fpsCam.gameObject.SetActive(true);
             cameraPos = transform.Find("CameraPos");
             if (cameraPos == null)
@@ -95,11 +95,11 @@ public class Playermovement : NetworkBehaviour
                 }
             }
             moveCameraScript.cameraPosition = cameraPos;
-        }
-        else
-        {
-            fpsCam.gameObject.SetActive(false);
-        }
+      //  }
+     //   else
+      //  {
+      //      fpsCam.gameObject.SetActive(false);
+      //  }
     }
 
     public void OnEnable()

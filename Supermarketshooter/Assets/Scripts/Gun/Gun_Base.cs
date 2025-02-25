@@ -2,7 +2,6 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using UnityEditor;
-
 public class Gun_Base : MonoBehaviour
 {
     // Bullet settings
@@ -18,9 +17,6 @@ public class Gun_Base : MonoBehaviour
     private int bulletsLeft, bulletsShot;
     private bool shooting, readyToShoot, reloading;
     private List<GameObject> bulletPool = new List<GameObject>();
-    public List<GameObject> gunParts = new List<GameObject>();
-    public List<GameObject> inventory = new List<GameObject>();
-    [SerializeField] Transform[] gunPartLocations;
 
     // Recoil settings
     public Rigidbody playerRb;
@@ -32,9 +28,15 @@ public class Gun_Base : MonoBehaviour
     public GameObject muzzleFlash;
     public TextMeshProUGUI ammunitionDisplay;
     public bool allowInvoke = true;
+
+    // Pickup system
+    private List<Gun_Piece_Base> collectedGunPieces = new List<Gun_Piece_Base>();
+    private List<GameObject> collectedGunPiecesObject = new List<GameObject>();
+    public List<Transform> gunPartPositions;
+    private int maxGunPieces = 3;
+    public Gun_Piece_Base hoveredPart;
+    Material oldMaterial;
     public Material targetedMaterial;
-    public Material oldMaterial;
-    Gun_Piece_Base hoveredPart;
     private void Awake()
     {
         // Initialize bullets and set gun to ready state
@@ -43,30 +45,23 @@ public class Gun_Base : MonoBehaviour
         PreloadBullets();
     }
 
-    private void Start()
-    {
-        fpsCam = Camera.main;
-    }
-
     private void Update()
     {
-
-        HighlightPartOnHover();
         HandleInput();
-
+        HandlePickup();
+        HighlightPartOnHover();
         // Update ammo UI if available
         if (ammunitionDisplay != null)
             ammunitionDisplay.SetText(bulletsLeft / bulletsPerTap + " / " + magazineSize / bulletsPerTap);
     }
-
     public void HighlightPartOnHover()
     {
         Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            if (hit.collider.GetComponent<Gun_Piece_Base>()!=null)
+            if (hit.collider.GetComponent<Gun_Piece_Base>() != null)
             {
-                if (hoveredPart == null )
+                if (hoveredPart == null)
                 {
                     hoveredPart = hit.collider.GetComponent<Gun_Piece_Base>();
                     oldMaterial = hoveredPart.gameObject.GetComponent<MeshRenderer>().material;
@@ -81,17 +76,16 @@ public class Gun_Base : MonoBehaviour
             }
 
         }
-    
-    }
 
+    }
     private void HandleInput()
     {
         // Check for shooting input
         shooting = allowButtonHold ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
 
         // Handle reloading input
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) SlideParts();
-        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) SlideParts();
+        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) Reload();
 
         // Handle shooting
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
@@ -99,19 +93,25 @@ public class Gun_Base : MonoBehaviour
             bulletsShot = 0;
             Shoot();
         }
-        if (Input.GetKeyDown(KeyCode.E))
+    }
+
+    private void HandlePickup()
+    {
+        if (Input.GetKeyDown(KeyCode.E)) // Press E to pick up a gun piece
         {
             Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Gun_Piece_Base gunPart = hit.collider.GetComponent<Gun_Piece_Base>();
-                if (gunPart != null)
+                Gun_Piece_Base gunPiece = hit.collider.GetComponent<Gun_Piece_Base>();
+                if (gunPiece != null)
                 {
-                 PickupGunPart(gunPart.gameObject);
+                    PickUpPart(gunPiece.gameObject);
                 }
             }
         }
     }
+
+  
 
     private void Shoot()
     {
@@ -169,37 +169,11 @@ public class Gun_Base : MonoBehaviour
         allowInvoke = true;
     }
 
-    private void SlideParts( )
+    private void Reload()
     {
-       
-        if ( inventory.Count > 0)
-        {
-            if (gunParts.Count == 3)
-            {
-                GameObject removedGunPart = gunParts[0];
-                gunParts.RemoveAt(0);
-                // Remove oldest gun part from the current list
-                Destroy(removedGunPart);
-            }
-            gunParts.Add(inventory[0]);
-            inventory[0].gameObject.SetActive(true);
-            inventory.RemoveAt(0);
-
-            reloading = true;
-            for (int i = 0; i < gunParts.Count; i++)
-            {
-
-                gunParts[i].transform.position = gunPartLocations[i].position;
-                gunParts[i].transform.parent = this.transform;
-                gunParts[i].SetActive(true);
-                gunParts[i].GetComponent<Gun_Piece_Base>().UpdateState(i);
-            }
-
-        }
-
+        // Start reload sequence
+        reloading = true;
         Invoke("ReloadFinished", reloadTime);
-
-
     }
 
     private void ReloadFinished()
@@ -235,15 +209,40 @@ public class Gun_Base : MonoBehaviour
         return newBullet;
     }
 
-    public void PickupGunPart(GameObject gunPart)
+    public void PickUpPart (GameObject gun_Piece)
     {
-        inventory.Add(gunPart);
-        gunPart.GetComponent<Gun_Piece_Base>().gun = this;
-        gunPart.SetActive(false);
-
-        if (gunParts.Count<3)
-            SlideParts();
-        
-          
+        if(collectedGunPieces.Count==3)
+        {
+            PopGunPart();
+        }
+        AddPart(gun_Piece);
     }
+    public void PopGunPart()
+    {
+        collectedGunPieces.RemoveAt(0);
+        GameObject gunOBJ = collectedGunPiecesObject[0];
+        collectedGunPiecesObject.RemoveAt(0);
+        Destroy(gunOBJ);
+
+    }
+    public void AddPart(GameObject gun_Piece)
+    {
+        collectedGunPiecesObject.Add(gun_Piece);
+        collectedGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
+
+        //setUpvisuals
+        for (int i = 0; i < collectedGunPiecesObject.Count; i++)
+        {
+            collectedGunPiecesObject[i].transform.parent = gunPartPositions[i];
+            collectedGunPiecesObject[i].transform.position = gunPartPositions[i].position;
+            collectedGunPiecesObject[i].transform.rotation = gunPartPositions[i].rotation;
+
+            //SetData
+            collectedGunPieces[i].gun = this;
+           collectedGunPieces[i].UpdateState(i);
+
+        }
+    }
+
+   
 }

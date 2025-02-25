@@ -137,10 +137,6 @@ MonoBehaviour:
   magazineSize: 10
   bulletsPerTap: 1
   allowButtonHold: 0
-  gunPartLocations:
-  - {fileID: 2497896441243199569}
-  - {fileID: 6815034193441467890}
-  - {fileID: 3358761985090681122}
   playerRb: {fileID: 0}
   recoilForce: 0
   fpsCam: {fileID: 0}
@@ -148,6 +144,12 @@ MonoBehaviour:
   muzzleFlash: {fileID: 0}
   ammunitionDisplay: {fileID: 0}
   allowInvoke: 1
+  gunPartPositions:
+  - {fileID: 2497896441243199569}
+  - {fileID: 6815034193441467890}
+  - {fileID: 3358761985090681122}
+  hoveredPart: {fileID: 0}
+  targetedMaterial: {fileID: 2100000, guid: 2e2bf5f4b2c53bc45ba4430538ebac74, type: 2}
 --- !u!1 &1588441938700334762
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,7 +237,7 @@ Transform:
   m_GameObject: {fileID: 5084851949780699357}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.981, z: 0}
+  m_LocalPosition: {x: 0, y: 4.091, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
