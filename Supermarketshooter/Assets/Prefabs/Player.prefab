@@ -344,6 +344,7 @@ MonoBehaviour:
   state: 0
   moveCameraScript: {fileID: 0}
   fpsCam: {fileID: 2736411270362467367}
+  multiplayerTestCube: {fileID: 8936353492618808342, guid: 2f18a72c47fba9f489aa7ba681fc82f7, type: 3}
   gun: {fileID: 8466174746855133879}
 --- !u!114 &3771365470699058284
 MonoBehaviour:
@@ -635,6 +636,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: fpsCam
+      value: 
+      objectReference: {fileID: 2736411270362467367}
     - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: playerRb
       value: 
