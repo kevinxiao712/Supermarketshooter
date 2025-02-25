@@ -49,6 +49,8 @@ public class Playermovement : NetworkBehaviour
     [SerializeField] Camera fpsCam;
 
     private Transform cameraPos;
+
+    private GameObject ui;
     public enum MovementState
     {
         walking,
@@ -65,8 +67,9 @@ public class Playermovement : NetworkBehaviour
 
         // checks if this player is the local one anything that would be set for
         // only this player should be set in this statement(camera, orientation, etc)
-       // if (IsLocalPlayer)
-        //{
+        if (IsLocalPlayer)
+        {
+            ui = GameObject.Find("Canvas"); // to hide ui
             fpsCam.gameObject.SetActive(true);
             cameraPos = transform.Find("CameraPos");
             if (cameraPos == null)
@@ -95,11 +98,11 @@ public class Playermovement : NetworkBehaviour
                 }
             }
             moveCameraScript.cameraPosition = cameraPos;
-      //  }
-     //   else
-      //  {
-      //      fpsCam.gameObject.SetActive(false);
-      //  }
+        }
+        else
+        {
+            fpsCam.gameObject.SetActive(false);
+        }
     }
 
     public void OnEnable()
@@ -118,7 +121,7 @@ public class Playermovement : NetworkBehaviour
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
         Debug.Log(grounded);
         wasGrounded = grounded;
-        MyInput();
+        MyInput(); // adding hide ui to this
         MovePlayer();
         SpeedControl();
         StateHandler();
@@ -140,6 +143,10 @@ public class Playermovement : NetworkBehaviour
             readyToJump = false;
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ui.SetActive(!ui.activeInHierarchy);
         }
     }
 
