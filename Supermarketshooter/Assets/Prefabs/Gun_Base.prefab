@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f6a91627c6787439c76da08bcb89fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   bulletPrefab: {fileID: 5084851949780699357}
   shootForce: 100
   upwardForce: 0
@@ -126,6 +127,7 @@ MonoBehaviour:
   - {fileID: 3358761985090681122}
   hoveredPart: {fileID: 0}
   targetedMaterial: {fileID: 2100000, guid: 2e2bf5f4b2c53bc45ba4430538ebac74, type: 2}
+  bulletList: {fileID: 11400000, guid: 5e444b03d8e3d6d4cacc97673f114261, type: 2}
 --- !u!1 &1588441938700334762
 GameObject:
   m_ObjectHideFlags: 0

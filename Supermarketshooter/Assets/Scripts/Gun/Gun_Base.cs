@@ -2,7 +2,9 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using UnityEditor;
-public class Gun_Base : MonoBehaviour
+using Unity.Netcode;
+
+public class Gun_Base : NetworkBehaviour
 {
     // Bullet settings
     public GameObject bulletPrefab;
@@ -37,6 +39,11 @@ public class Gun_Base : MonoBehaviour
     public Gun_Piece_Base hoveredPart;
     Material oldMaterial;
     public Material targetedMaterial;
+
+    // Multiplayer fields
+    [SerializeField] private BulletList bulletList;
+
+
     private void Awake()
     {
         // Initialize bullets and set gun to ready state
@@ -47,6 +54,9 @@ public class Gun_Base : MonoBehaviour
 
     private void Update()
     {
+        // Do nothing if the player giving input is not the active player
+        if (!IsOwner) return;
+
         HandleInput();
         HandlePickup();
         HighlightPartOnHover();
@@ -111,7 +121,7 @@ public class Gun_Base : MonoBehaviour
         }
     }
 
-  
+
 
     private void Shoot()
     {
@@ -185,10 +195,32 @@ public class Gun_Base : MonoBehaviour
 
     private void PreloadBullets()
     {
+
+
+        //// Create a pool of bullets
+        //for (int i = 0; i < magazineSize; i++)
+        //{
+        //    GameObject bullet = Instantiate(bulletPrefab);
+
+        //    NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
+        //    bulletNetObj.Spawn(true);
+
+        //    bullet.SetActive(false);
+        //    bulletPool.Add(bullet);
+        //}
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void spawnBulletsServerRPC()
+    {
         // Create a pool of bullets
         for (int i = 0; i < magazineSize; i++)
         {
             GameObject bullet = Instantiate(bulletPrefab);
+
+            NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
+            bulletNetObj.Spawn(true);
+
             bullet.SetActive(false);
             bulletPool.Add(bullet);
         }
@@ -209,9 +241,9 @@ public class Gun_Base : MonoBehaviour
         return newBullet;
     }
 
-    public void PickUpPart (GameObject gun_Piece)
+    public void PickUpPart(GameObject gun_Piece)
     {
-        if(collectedGunPieces.Count==3)
+        if (collectedGunPieces.Count == 3)
         {
             PopGunPart();
         }
@@ -239,10 +271,10 @@ public class Gun_Base : MonoBehaviour
 
             //SetData
             collectedGunPieces[i].gun = this;
-           collectedGunPieces[i].UpdateState(i);
+            collectedGunPieces[i].UpdateState(i);
 
         }
     }
 
-   
+
 }
