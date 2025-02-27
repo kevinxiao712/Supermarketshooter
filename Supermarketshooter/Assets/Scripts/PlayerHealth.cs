@@ -13,18 +13,19 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-    }
-    void Awake()
-    {
-        // If no respawn points have been assigned manually, search for them by tag.
-        if (respawnPoints == null || respawnPoints.Length == 0)
+
+        // Find all respawn points in the scene dynamically
+        GameObject[] respawnObjects = GameObject.FindGameObjectsWithTag("Respawn");
+        respawnPoints = new Transform[respawnObjects.Length];
+
+        for (int i = 0; i < respawnObjects.Length; i++)
         {
-            GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("RespawnPoint");
-            respawnPoints = new Transform[spawnPoints.Length];
-            for (int i = 0; i < spawnPoints.Length; i++)
-            {
-                respawnPoints[i] = spawnPoints[i].transform;
-            }
+            respawnPoints[i] = respawnObjects[i].transform;
+        }
+
+        if (respawnPoints.Length == 0)
+        {
+            Debug.LogWarning("No respawn points found in the scene!");
         }
     }
 
