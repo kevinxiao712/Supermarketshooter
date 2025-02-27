@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 3771365470699058284}
   - component: {fileID: 2406915547090718883}
   - component: {fileID: 5886996976903704453}
+  - component: {fileID: 613266948891892626}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -342,6 +343,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   orientation: {fileID: 5355502365269865072}
+  maxJumps: 2
   maxSlopeAngle: 45
   state: 0
   playerCamScript: {fileID: 0}
@@ -350,6 +352,7 @@ MonoBehaviour:
   cameraPos: {fileID: 0}
   ui: {fileID: 0}
   gun: {fileID: 8466174746855133879}
+  coyoteTime: 0.2
 --- !u!114 &3771365470699058284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,6 +417,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &613266948891892626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829421436210421715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4076695607f9c114d93d0f87553f4fb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
+  respawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &6640568356304540784
 GameObject:
   m_ObjectHideFlags: 0
