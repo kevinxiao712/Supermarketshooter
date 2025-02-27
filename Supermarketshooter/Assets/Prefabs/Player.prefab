@@ -409,6 +409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ae1159265438664ebb9a1f1848f36b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &6640568356304540784
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,7 +663,7 @@ PrefabInstance:
       objectReference: {fileID: 4978353064090164125, guid: 7921f95f73895184e90be32127c36820, type: 3}
     - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: magazineSize
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

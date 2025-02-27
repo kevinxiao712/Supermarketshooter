@@ -49,7 +49,12 @@ public class Gun_Base : NetworkBehaviour
         // Initialize bullets and set gun to ready state
         bulletsLeft = magazineSize;
         readyToShoot = true;
-        //PreloadBullets();
+    }
+
+    public void Start()
+    {
+        if (!IsOwner) return;
+        PreloadBullets();
     }
 
     private void Update()
@@ -122,7 +127,6 @@ public class Gun_Base : NetworkBehaviour
     }
 
 
-
     private void Shoot()
     {
         readyToShoot = false;
@@ -132,13 +136,14 @@ public class Gun_Base : NetworkBehaviour
 
         // Retrieve a bullet from the pool
         GameObject bullet = GetBullet();
-        bullet.transform.position = attackPoint.position;
-        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
-        bullet.SetActive(true);
+        ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        //bullet.transform.position = attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        //bullet.SetActive(true);
 
         // Apply force to bullet
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
+        //Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        //rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
 
         // Instantiate muzzle flash if available
         if (muzzleFlash != null)
@@ -159,6 +164,28 @@ public class Gun_Base : NetworkBehaviour
         // Handle burst shots
         if (bulletsShot < bulletsPerTap && bulletsLeft > 0)
             Invoke("Shoot", timeBetweenShots);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void ServerChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
+    {
+        EveryoneChangeBulletTransformRPC(bulletNetObjRef, directionWithSpread);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void EveryoneChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
+    {
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+
+        Debug.Log(attackPoint.transform.position);
+
+        bullet.transform.position = attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.gameObject.SetActive(true);
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
     }
 
     private Vector3 CalculateSpreadDirection()
@@ -195,17 +222,20 @@ public class Gun_Base : NetworkBehaviour
 
     private void PreloadBullets()
     {
+        // All object spawning happens server side
+        MultiplayerHandler.Instance.PreSpawnBullets(magazineSize, 0, this);
+
         // Create a pool of bullets
-        for (int i = 0; i < magazineSize; i++)
-        {
-            GameObject bullet = Instantiate(bulletPrefab);
+        //for (int i = 0; i < magazineSize; i++)
+        //{
+        //    GameObject bullet = Instantiate(bulletPrefab);
 
-            NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
-            bulletNetObj.Spawn(true);
+        //    NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
+        //    bulletNetObj.Spawn(true);
 
-            bullet.SetActive(false);
-            bulletPool.Add(bullet);
-        }
+        //    bullet.SetActive(false);
+        //    bulletPool.Add(bullet);
+        //}
     }
 
 
@@ -215,11 +245,15 @@ public class Gun_Base : NetworkBehaviour
         foreach (GameObject bullet in bulletPool)
         {
             if (!bullet.activeInHierarchy)
+            {
+                Debug.Log("Bullet Found!");
                 return bullet;
+            }
         }
 
+        Debug.Log("Generating new bullet...");
         // Generate new bullet
-        MultiplayerHandler.Instance.ShootBullets(0, this);
+        MultiplayerHandler.Instance.GenerateBullets(0, this);
         // Return the newest bullet generated
         return bulletPool[bulletPool.Count - 1];
 
@@ -232,9 +266,8 @@ public class Gun_Base : NetworkBehaviour
     // Allows the server to create the bullets but still save the bullets to the client
     public void AddBulletToBulletPool(GameObject bulletToAdd)
     {
-            bulletPool.Add(bulletToAdd);
+        bulletPool.Add(bulletToAdd);
     }
-
     public void PickUpPart(GameObject gun_Piece)
     {
         if (collectedGunPieces.Count == 3)
