@@ -166,19 +166,23 @@ public class Gun_Base : NetworkBehaviour
             Invoke("Shoot", timeBetweenShots);
     }
 
-    [Rpc(SendTo.Server)]
+    [Rpc(SendTo.Everyone)]
     private void ServerChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
-    {
-        EveryoneChangeBulletTransformRPC(bulletNetObjRef, directionWithSpread);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void EveryoneChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
     {
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         Bullet bullet = bulletNetObj.GetComponent<Bullet>();
 
-        Debug.Log(attackPoint.transform.position);
+        bullet.transform.position = attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.gameObject.SetActive(true);
+        // EveryoneChangeBulletTransformRPC(bulletNetObjRef, directionWithSpread, this.NetworkObject);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void EveryoneChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef)
+    {
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        Bullet bullet = bulletNetObj.GetComponent<Bullet>();
 
         bullet.transform.position = attackPoint.position;
         bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
