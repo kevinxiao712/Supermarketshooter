@@ -49,7 +49,7 @@ public class Gun_Base : NetworkBehaviour
         // Initialize bullets and set gun to ready state
         bulletsLeft = magazineSize;
         readyToShoot = true;
-        PreloadBullets();
+        //PreloadBullets();
     }
 
     private void Update()
@@ -195,24 +195,6 @@ public class Gun_Base : NetworkBehaviour
 
     private void PreloadBullets()
     {
-
-
-        //// Create a pool of bullets
-        //for (int i = 0; i < magazineSize; i++)
-        //{
-        //    GameObject bullet = Instantiate(bulletPrefab);
-
-        //    NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
-        //    bulletNetObj.Spawn(true);
-
-        //    bullet.SetActive(false);
-        //    bulletPool.Add(bullet);
-        //}
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void spawnBulletsServerRPC()
-    {
         // Create a pool of bullets
         for (int i = 0; i < magazineSize; i++)
         {
@@ -226,6 +208,7 @@ public class Gun_Base : NetworkBehaviour
         }
     }
 
+
     private GameObject GetBullet()
     {
         // Retrieve an inactive bullet from the pool
@@ -235,10 +218,21 @@ public class Gun_Base : NetworkBehaviour
                 return bullet;
         }
 
-        // If all bullets are in use, create a new one
-        GameObject newBullet = Instantiate(bulletPrefab);
-        bulletPool.Add(newBullet);
-        return newBullet;
+        // Generate new bullet
+        MultiplayerHandler.Instance.ShootBullets(0, this);
+        // Return the newest bullet generated
+        return bulletPool[bulletPool.Count - 1];
+
+        //// If all bullets are in use, create a new one
+        //GameObject newBullet = Instantiate(bulletPrefab);
+        //bulletPool.Add(newBullet);
+        //return newBullet;
+    }
+
+    // Allows the server to create the bullets but still save the bullets to the client
+    public void AddBulletToBulletPool(GameObject bulletToAdd)
+    {
+            bulletPool.Add(bulletToAdd);
     }
 
     public void PickUpPart(GameObject gun_Piece)
@@ -275,6 +269,8 @@ public class Gun_Base : NetworkBehaviour
 
         }
     }
-
-
+    public NetworkObject GetNetworkObject()
+    {
+        return NetworkObject;
+    }
 }
