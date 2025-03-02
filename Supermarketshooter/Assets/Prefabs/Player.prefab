@@ -236,6 +236,8 @@ GameObject:
   - component: {fileID: 4747668697399292336}
   - component: {fileID: 3771365470699058284}
   - component: {fileID: 2406915547090718883}
+  - component: {fileID: 5886996976903704453}
+  - component: {fileID: 613266948891892626}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -341,6 +343,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   orientation: {fileID: 5355502365269865072}
+  maxJumps: 2
   maxSlopeAngle: 45
   state: 0
   playerCamScript: {fileID: 0}
@@ -349,6 +352,7 @@ MonoBehaviour:
   cameraPos: {fileID: 0}
   ui: {fileID: 0}
   gun: {fileID: 8466174746855133879}
+  coyoteTime: 0.2
 --- !u!114 &3771365470699058284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,6 +404,38 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   camera: {fileID: 0}
   listener: {fileID: 0}
+--- !u!114 &5886996976903704453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829421436210421715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ae1159265438664ebb9a1f1848f36b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &613266948891892626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829421436210421715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4076695607f9c114d93d0f87553f4fb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
+  respawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &6640568356304540784
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,6 +676,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: fpsCam
+      value: 
+      objectReference: {fileID: 2736411270362467367}
+    - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: playerRb
       value: 
       objectReference: {fileID: 2033796890028596013}
@@ -647,6 +687,10 @@ PrefabInstance:
       propertyPath: bulletPrefab
       value: 
       objectReference: {fileID: 4978353064090164125, guid: 7921f95f73895184e90be32127c36820, type: 3}
+    - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: magazineSize
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

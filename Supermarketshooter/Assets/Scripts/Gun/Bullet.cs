@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Bullet : MonoBehaviour
+public class Bullet : NetworkBehaviour
 {
     public float lifetime = 3f;
     void OnEnable()

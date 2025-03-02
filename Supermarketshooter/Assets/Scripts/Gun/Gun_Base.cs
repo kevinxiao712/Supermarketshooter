@@ -2,7 +2,9 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using UnityEditor;
-public class Gun_Base : MonoBehaviour
+using Unity.Netcode;
+
+public class Gun_Base : NetworkBehaviour
 {
     // Bullet settings
     public GameObject bulletPrefab;
@@ -37,16 +39,29 @@ public class Gun_Base : MonoBehaviour
     public Gun_Piece_Base hoveredPart;
     Material oldMaterial;
     public Material targetedMaterial;
+
+    // Multiplayer fields
+    [SerializeField] private BulletList bulletList;
+
+
     private void Awake()
     {
         // Initialize bullets and set gun to ready state
         bulletsLeft = magazineSize;
         readyToShoot = true;
+    }
+
+    public void Start()
+    {
+        if (!IsOwner) return;
         PreloadBullets();
     }
 
     private void Update()
     {
+        // Do nothing if the player giving input is not the active player
+        if (!IsOwner) return;
+
         HandleInput();
         HandlePickup();
         HighlightPartOnHover();
@@ -111,7 +126,6 @@ public class Gun_Base : MonoBehaviour
         }
     }
 
-  
 
     private void Shoot()
     {
@@ -122,13 +136,14 @@ public class Gun_Base : MonoBehaviour
 
         // Retrieve a bullet from the pool
         GameObject bullet = GetBullet();
-        bullet.transform.position = attackPoint.position;
-        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
-        bullet.SetActive(true);
+        ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        //bullet.transform.position = attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        //bullet.SetActive(true);
 
         // Apply force to bullet
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
+        //Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        //rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
 
         // Instantiate muzzle flash if available
         if (muzzleFlash != null)
@@ -149,6 +164,28 @@ public class Gun_Base : MonoBehaviour
         // Handle burst shots
         if (bulletsShot < bulletsPerTap && bulletsLeft > 0)
             Invoke("Shoot", timeBetweenShots);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void ServerChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
+    {
+        EveryoneChangeBulletTransformRPC(bulletNetObjRef, directionWithSpread);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void EveryoneChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
+    {
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+
+        Debug.Log(attackPoint.transform.position);
+
+        bullet.transform.position = attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.gameObject.SetActive(true);
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
     }
 
     private Vector3 CalculateSpreadDirection()
@@ -185,14 +222,22 @@ public class Gun_Base : MonoBehaviour
 
     private void PreloadBullets()
     {
+        // All object spawning happens server side
+        MultiplayerHandler.Instance.PreSpawnBullets(magazineSize, 0, this);
+
         // Create a pool of bullets
-        for (int i = 0; i < magazineSize; i++)
-        {
-            GameObject bullet = Instantiate(bulletPrefab);
-            bullet.SetActive(false);
-            bulletPool.Add(bullet);
-        }
+        //for (int i = 0; i < magazineSize; i++)
+        //{
+        //    GameObject bullet = Instantiate(bulletPrefab);
+
+        //    NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
+        //    bulletNetObj.Spawn(true);
+
+        //    bullet.SetActive(false);
+        //    bulletPool.Add(bullet);
+        //}
     }
+
 
     private GameObject GetBullet()
     {
@@ -200,18 +245,32 @@ public class Gun_Base : MonoBehaviour
         foreach (GameObject bullet in bulletPool)
         {
             if (!bullet.activeInHierarchy)
+            {
+                Debug.Log("Bullet Found!");
                 return bullet;
+            }
         }
 
-        // If all bullets are in use, create a new one
-        GameObject newBullet = Instantiate(bulletPrefab);
-        bulletPool.Add(newBullet);
-        return newBullet;
+        Debug.Log("Generating new bullet...");
+        // Generate new bullet
+        MultiplayerHandler.Instance.GenerateBullets(0, this);
+        // Return the newest bullet generated
+        return bulletPool[bulletPool.Count - 1];
+
+        //// If all bullets are in use, create a new one
+        //GameObject newBullet = Instantiate(bulletPrefab);
+        //bulletPool.Add(newBullet);
+        //return newBullet;
     }
 
-    public void PickUpPart (GameObject gun_Piece)
+    // Allows the server to create the bullets but still save the bullets to the client
+    public void AddBulletToBulletPool(GameObject bulletToAdd)
     {
-        if(collectedGunPieces.Count==3)
+        bulletPool.Add(bulletToAdd);
+    }
+    public void PickUpPart(GameObject gun_Piece)
+    {
+        if (collectedGunPieces.Count == 3)
         {
             PopGunPart();
         }
@@ -239,10 +298,12 @@ public class Gun_Base : MonoBehaviour
 
             //SetData
             collectedGunPieces[i].gun = this;
-           collectedGunPieces[i].UpdateState(i);
+            collectedGunPieces[i].UpdateState(i);
 
         }
     }
-
-   
+    public NetworkObject GetNetworkObject()
+    {
+        return NetworkObject;
+    }
 }
