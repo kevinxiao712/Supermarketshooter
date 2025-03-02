@@ -4595,13 +4595,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isHost: 1
   restockTimer: 30
+  allProduceSpawners: []
   allSpawnData:
   - produceReference: {fileID: 2207558766517608439, guid: 985cae3914075fd4dbdb46463979d04b, type: 3}
-    probability: 1
+    probability: 0.5
   - produceReference: {fileID: 4607277395394896149, guid: 379b2f469bb4f8542a2dff47c67016a4, type: 3}
-    probability: 1
+    probability: 0.5
   - produceReference: {fileID: 6176746122284355072, guid: 77fddeb3180784749bb9a84fa839fa20, type: 3}
-    probability: 1
+    probability: 0.5
 --- !u!1 &676496745
 GameObject:
   m_ObjectHideFlags: 0

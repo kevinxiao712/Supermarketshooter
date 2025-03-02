@@ -16,7 +16,13 @@ public class ProduceSpawner : MonoBehaviour
     /// <param name="spawnObj"></param>
     public void SpawnProduce(GameObject spawnObj) {
         if (heldObj != null) {
-            Destroy(heldObj);
+            // find all game objects in a small radius; If they are the previously held gameobject, destroy them!
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 0.01f);
+            foreach (var hitCollider in hitColliders) {
+                if (hitCollider.gameObject == heldObj) {
+                    Destroy(hitCollider.gameObject);
+                }
+            }
         }
         heldObj = Instantiate(spawnObj, gameObject.transform.position, Quaternion.identity, gameObject.transform);
     }

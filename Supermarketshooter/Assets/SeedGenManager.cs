@@ -40,7 +40,7 @@ public class SeedGenManager : MonoBehaviour
             seed = GenerateNewSeed();
             InitializeSeed(seed);
             SendRestockSignalToAll();
-            StartCoroutine(RestockTimer());
+            StartCoroutine(RestockTimer(5));
         }
     }
 
@@ -93,10 +93,10 @@ public class SeedGenManager : MonoBehaviour
             i++;
         }
 
-        spawnNumerator = Random.Range(0, spawnDenominator);
-
         foreach (ProduceSpawner produceSpawner in allProduceSpawners) {
-            Debug.Log("Should spawn produce!");
+            
+            spawnNumerator = Random.Range(0, spawnDenominator);
+            
             foreach (ProduceSpawnData spawnData in allSpawnData) {
                 if (spawnNumerator <= spawnData.probability) {
                     produceSpawner.SpawnProduce(spawnData.produceReference);
@@ -108,10 +108,10 @@ public class SeedGenManager : MonoBehaviour
 
     }
 
-    public IEnumerator RestockTimer() {
+    public IEnumerator RestockTimer(float restockTimer) {
         yield return new WaitForSeconds(restockTimer);
         SendRestockSignalToAll();
-        StartCoroutine(RestockTimer());
+        StartCoroutine(RestockTimer(this.restockTimer));
     }
 }
 
