@@ -289,6 +289,7 @@ public class Gun_Base : NetworkBehaviour
             PopGunPart();
         }
         AddPart(gun_Piece);
+        UpdateAllBullets();
     }
     public void PopGunPart()
     {
@@ -320,4 +321,17 @@ public class Gun_Base : NetworkBehaviour
     {
         return NetworkObject;
     }
+
+    public void UpdateAllBullets()
+    {
+        if (collectedGunPieces[0] != null)
+        {
+            foreach (GameObject bullet in bulletPool)
+            {
+                bullet.GetComponent<Bullet>().SetNewType(collectedGunPieces[0]);
+
+            }
+        }
+    }
+        
 }
