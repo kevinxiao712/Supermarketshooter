@@ -219,9 +219,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4512f9d3bf146d42b7547c94c68cef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   sensX: 400
   sensY: 400
-  orientation: {fileID: 0}
+  orientation: {fileID: 5355502365269865072}
 --- !u!1 &5829421436210421715
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,7 +273,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5829421436210421715}
   serializedVersion: 4
-  m_Mass: 2
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -333,7 +334,7 @@ MonoBehaviour:
   walkSpeed: 5
   sprintSpeed: 10
   groundDrag: 5
-  jumpforce: 20
+  jumpforce: 7
   jumpCooldown: 0.25
   airMultiplier: 0.1
   jumpKey: 32
@@ -352,6 +353,7 @@ MonoBehaviour:
   cameraPos: {fileID: 0}
   ui: {fileID: 0}
   gun: {fileID: 8466174746855133879}
+  fallMultiplier: 10
   coyoteTime: 0.2
 --- !u!114 &3771365470699058284
 MonoBehaviour:
@@ -431,11 +433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
-  respawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  respawnDelay: 2
 --- !u!1 &6640568356304540784
 GameObject:
   m_ObjectHideFlags: 0
