@@ -76,7 +76,6 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // Create new bullet
         GameObject newBullet = Instantiate(bulletPrefab.gameObject);
-
         // Get Network Object bullshit
         NetworkObject newBulletNetObj = newBullet.GetComponent<NetworkObject>();
         newBulletNetObj.Spawn(true); // bool for destroy when owner is destroyed

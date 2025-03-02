@@ -12,6 +12,7 @@ public class Corn_Part : Gun_Piece_Base
                 gun.allowButtonHold = allowButtonHold;
                 gun.shootForce = shootForce;
                 gun.timeBetweenShooting = timeBetweenShooting;
+                gun.damage = damage;
 
                 // Example: Modify gun stats
                 break;

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5355502365269865072}
   - component: {fileID: 7173834954493094163}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Orientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,7 +82,7 @@ GameObject:
   - component: {fileID: 673477191704584557}
   - component: {fileID: 8001880433048219561}
   - component: {fileID: 7401620005266352607}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerCam
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 2406915547090718883}
   - component: {fileID: 5886996976903704453}
   - component: {fileID: 613266948891892626}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -446,7 +446,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1197559502906245605}
   - component: {fileID: 8964223414802121371}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: CameraHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +491,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9177687991518011443}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: CameraPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,7 +525,7 @@ GameObject:
   - component: {fileID: 4155727720725338630}
   - component: {fileID: 5772445193966955811}
   - component: {fileID: 3375484608888184169}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerObj
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -635,6 +635,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gun_Base
       objectReference: {fileID: 0}
+    - target: {fileID: 298517706137292504, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 895812339826771371, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.44
@@ -675,6 +679,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1588441938700334762, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4519900365963232828, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5084851949780699357, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5785373674826499521, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2772417417
+      objectReference: {fileID: 0}
     - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: fpsCam
       value: 
@@ -690,6 +710,10 @@ PrefabInstance:
     - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: magazineSize
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221457872355446899, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

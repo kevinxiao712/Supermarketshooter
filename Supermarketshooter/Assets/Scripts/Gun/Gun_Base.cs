@@ -15,6 +15,7 @@ public class Gun_Base : NetworkBehaviour
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
     public bool isFiringBullets = true;
+    public float damage;
 
     // Internal tracking variables
     private int bulletsLeft, bulletsShot;
@@ -262,6 +263,11 @@ public class Gun_Base : NetworkBehaviour
         Debug.Log("Generating new bullet...");
         // Generate new bullet
         MultiplayerHandler.Instance.GenerateBullets(0, this);
+
+        foreach (GameObject bullet in bulletPool)
+        {
+            bullet.GetComponent<Bullet>().gun = this;
+        }
         // Return the newest bullet generated
         return bulletPool[bulletPool.Count - 1];
 
