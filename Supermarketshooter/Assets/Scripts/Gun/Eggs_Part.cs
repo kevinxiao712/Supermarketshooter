@@ -24,6 +24,7 @@ public class Eggs_Part : Gun_Piece_Base
                 gun.bulletsPerTap = bulletsPerTap;
                 gun.spread = spread;
                 gun.magazineSize = magazineSize;
+                gun.isFiringBullets = true;
                 // Example: Debuff or different behavior
                 break;
         }

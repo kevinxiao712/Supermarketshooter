@@ -19,6 +19,9 @@ public class Gun_Piece_Base : MonoBehaviour
     public float recoilForce;
     public Gun_Base gun;
 
+    public GameObject Bullets;
+    public bool isFiringBullets = true;
+
     public void UpdateState(int position)
     {
         switch (position)

@@ -125,12 +125,14 @@ MonoBehaviour:
   upwardForce: 0
   timeBetweenShooting: 0.1
   spread: 4
-  reloadTime: 3
+  reloadTime: 2
   timeBetweenShots: 0.1
-  damage: 1
+  damage: 5
   magazineSize: 30
   bulletsPerTap: 1
   allowButtonHold: 1
   playerRb: {fileID: 0}
   recoilForce: 2
   gun: {fileID: 0}
+  Bullets: {fileID: 0}
+  isFiringBullets: 1

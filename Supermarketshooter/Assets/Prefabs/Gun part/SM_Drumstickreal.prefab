@@ -96,11 +96,13 @@ MonoBehaviour:
   timeBetweenShooting: 1
   spread: 0
   reloadTime: 2
-  timeBetweenShots: 0.5
-  damage: 5
+  timeBetweenShots: 1
+  damage: 80
   magazineSize: 10
   bulletsPerTap: 1
   allowButtonHold: 0
   playerRb: {fileID: 0}
   recoilForce: 0
   gun: {fileID: 0}
+  Bullets: {fileID: 0}
+  isFiringBullets: 1

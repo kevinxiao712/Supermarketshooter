@@ -14,6 +14,7 @@ public class Gun_Base : NetworkBehaviour
     public float timeBetweenShooting, spread, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
+    public bool isFiringBullets = true;
 
     // Internal tracking variables
     private int bulletsLeft, bulletsShot;
@@ -135,9 +136,15 @@ public class Gun_Base : NetworkBehaviour
         // Calculate bullet direction with spread
         Vector3 directionWithSpread = CalculateSpreadDirection();
 
-        // Retrieve a bullet from the pool
-        GameObject bullet = GetBullet();
-        ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        if (isFiringBullets)
+        { // Retrieve a bullet from the pool
+            GameObject bullet = GetBullet();
+            ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        }
+        else
+        {
+            //Set up for ray cast
+        }
         //bullet.transform.position = attackPoint.position;
         //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
         //bullet.SetActive(true);

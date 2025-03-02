@@ -115,16 +115,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   bulletPrefab: {fileID: 0}
-  shootForce: 0
+  shootForce: 200
   upwardForce: 0
-  timeBetweenShooting: 0
-  spread: 0
-  reloadTime: 0
-  timeBetweenShots: 0
-  damage: 0
-  magazineSize: 0
-  bulletsPerTap: 0
-  allowButtonHold: 0
+  timeBetweenShooting: 0.5
+  spread: 1
+  reloadTime: 2
+  timeBetweenShots: 0.1
+  damage: 15
+  magazineSize: 10
+  bulletsPerTap: 3
+  allowButtonHold: 1
   playerRb: {fileID: 0}
   recoilForce: 0
   gun: {fileID: 0}
+  Bullets: {fileID: 0}
+  isFiringBullets: 1
