@@ -69,6 +69,7 @@ public class Gun_Base : NetworkBehaviour
         if (ammunitionDisplay != null)
             ammunitionDisplay.SetText(bulletsLeft / bulletsPerTap + " / " + magazineSize / bulletsPerTap);
     }
+
     public void HighlightPartOnHover()
     {
         Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -93,6 +94,7 @@ public class Gun_Base : NetworkBehaviour
         }
 
     }
+
     private void HandleInput()
     {
         // Check for shooting input
@@ -126,7 +128,6 @@ public class Gun_Base : NetworkBehaviour
         }
     }
 
-
     private void Shoot()
     {
         readyToShoot = false;
@@ -136,10 +137,11 @@ public class Gun_Base : NetworkBehaviour
 
         // Retrieve a bullet from the pool
         GameObject bullet = GetBullet();
-        ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
-        //bullet.transform.position = attackPoint.position;
-        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
-        //bullet.SetActive(true);
+        bullet.transform.position = attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.SetActive(true);
+
+        ServerChangeBulletTransform_RPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
 
         // Apply force to bullet
         //Rigidbody rb = bullet.GetComponent<Rigidbody>();
@@ -166,30 +168,43 @@ public class Gun_Base : NetworkBehaviour
             Invoke("Shoot", timeBetweenShots);
     }
 
-    [Rpc(SendTo.Everyone)]
-    private void ServerChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
+    [Rpc(SendTo.Server)]
+    private void ServerChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread)
     {
+        Debug.Log("ServerChangeBulletTransformRPC started sending change bullet to server");
+
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+        bulletNetObj.transform.position = attackPoint.position;
+        bulletNetObj.gameObject.SetActive(true);
 
-        bullet.transform.position = attackPoint.position;
-        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
-        bullet.gameObject.SetActive(true);
-        // EveryoneChangeBulletTransformRPC(bulletNetObjRef, directionWithSpread, this.NetworkObject);
+        //bullet.transform.position = attackPoint.position;
+        //bullet.gameObject.SetActive(true);
+
+        //bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        //Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+
+        //bullet.transform.position = attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        //bullet.gameObject.SetActive(true);
+
+        EveryoneChangeBulletTransform_RPC(bulletNetObjRef, directionWithSpread, this.NetworkObject);
     }
 
     [Rpc(SendTo.Everyone)]
-    private void EveryoneChangeBulletTransformRPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef)
+    private void EveryoneChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef)
     {
+        Debug.Log("EveryoneChangeBulletTransformRPC started sending change bullet to everyone");
+
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         Bullet bullet = bulletNetObj.GetComponent<Bullet>();
 
-        bullet.transform.position = attackPoint.position;
-        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        //bullet.transform.position = attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
         bullet.gameObject.SetActive(true);
 
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
+        //Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        //rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
     }
 
     private Vector3 CalculateSpreadDirection()
@@ -248,11 +263,11 @@ public class Gun_Base : NetworkBehaviour
         // Retrieve an inactive bullet from the pool
         foreach (GameObject bullet in bulletPool)
         {
-            if (!bullet.activeInHierarchy)
-            {
-                Debug.Log("Bullet Found!");
-                return bullet;
-            }
+            //if (!bullet.activeInHierarchy)
+            //{
+            //    Debug.Log("Bullet Found!");
+            //    return bullet;
+            //}
         }
 
         Debug.Log("Generating new bullet...");

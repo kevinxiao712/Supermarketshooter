@@ -4,6 +4,7 @@ using Unity.Netcode;
 public class Bullet : NetworkBehaviour
 {
     public float lifetime = 3f;
+
     void OnEnable()
     {
         Invoke("Deactivate", lifetime);
@@ -17,6 +18,7 @@ public class Bullet : NetworkBehaviour
 
     void Deactivate()
     {
+        //MultiplayerHandler.Instance.DeactivateBullet(this);
         gameObject.SetActive(false);
     }
 }
