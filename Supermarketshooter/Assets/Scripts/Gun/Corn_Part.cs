@@ -10,9 +10,11 @@ public class Corn_Part : Gun_Piece_Base
         {
             case GunPieceState.Forward:
                 gun.allowButtonHold = allowButtonHold;
-                gun.shootForce = shootForce;
                 gun.timeBetweenShooting = timeBetweenShooting;
-
+                gun.damage = damage;
+                gun.timeBetweenShots = timeBetweenShots;
+                gun.bulletsPerTap = bulletsPerTap;
+                gun.spread = spread;
                 // Example: Modify gun stats
                 break;
             case GunPieceState.Mid:
@@ -20,10 +22,9 @@ public class Corn_Part : Gun_Piece_Base
                 // Example: Neutral state
                 break;
             case GunPieceState.Back:
-                gun.timeBetweenShots = timeBetweenShots;
-                gun.bulletsPerTap = bulletsPerTap;
-                gun.spread = spread;
+                gun.shootForce = shootForce;
                 gun.magazineSize = magazineSize;
+                gun.isFiringBullets = true;
                 // Example: Debuff or different behavior
                 break;
         }

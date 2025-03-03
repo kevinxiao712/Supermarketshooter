@@ -14,6 +14,8 @@ public class Gun_Base : NetworkBehaviour
     public float timeBetweenShooting, spread, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
+    public bool isFiringBullets = true;
+    public float damage;
 
     // Internal tracking variables
     private int bulletsLeft, bulletsShot;
@@ -43,6 +45,14 @@ public class Gun_Base : NetworkBehaviour
     // Multiplayer fields
     [SerializeField] private BulletList bulletList;
 
+    //References
+    public Playermovement playermovement;
+    public GameObject playerObject;
+    public PlayerHealth playerHealth;
+    //gun Passives
+    [HideInInspector]
+     public int DamageMuliplayer = 1;
+
 
     private void Awake()
     {
@@ -55,6 +65,7 @@ public class Gun_Base : NetworkBehaviour
     {
         if (!IsOwner) return;
         PreloadBullets();
+        transform.parent = fpsCam.transform;
     }
 
     private void Update()
@@ -134,9 +145,16 @@ public class Gun_Base : NetworkBehaviour
         // Calculate bullet direction with spread
         Vector3 directionWithSpread = CalculateSpreadDirection();
 
-        // Retrieve a bullet from the pool
-        GameObject bullet = GetBullet();
-        ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        if (isFiringBullets)
+        { // Retrieve a bullet from the pool
+            GameObject bullet = GetBullet();
+            bullet.GetComponent<Bullet>().damageMult = DamageMuliplayer;
+            ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        }
+        else
+        {
+            //Set up for ray cast
+        }
         //bullet.transform.position = attackPoint.position;
         //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
         //bullet.SetActive(true);
@@ -254,6 +272,11 @@ public class Gun_Base : NetworkBehaviour
         Debug.Log("Generating new bullet...");
         // Generate new bullet
         MultiplayerHandler.Instance.GenerateBullets(0, this);
+        UpdateBullet(bulletPool[bulletPool.Count - 1]);
+        foreach (GameObject bullet in bulletPool)
+        {
+            bullet.GetComponent<Bullet>().gun = this;
+        }
         // Return the newest bullet generated
         return bulletPool[bulletPool.Count - 1];
 
@@ -275,6 +298,7 @@ public class Gun_Base : NetworkBehaviour
             PopGunPart();
         }
         AddPart(gun_Piece);
+        UpdateAllBullets();
     }
     public void PopGunPart()
     {
@@ -306,4 +330,25 @@ public class Gun_Base : NetworkBehaviour
     {
         return NetworkObject;
     }
+
+    public void UpdateAllBullets()
+    {
+        if (collectedGunPieces[0] != null)
+        {
+            foreach (GameObject bullet in bulletPool)
+            {
+                bullet.GetComponent<Bullet>().SetNewType(collectedGunPieces[0]);
+
+            }
+        }
+    }
+    public void UpdateBullet(GameObject bullet)
+    {
+      
+      bullet.GetComponent<Bullet>().SetNewType(collectedGunPieces[0]);
+
+            
+        
+    }
+
 }
