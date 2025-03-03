@@ -1,10 +1,18 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Health Settings")]
     public int maxHealth = 100;
     public int currentHealth;
+
+    [Header("UI References")]
+    public Slider healthSlider; 
+
+    private PlayerHealth playerHealth; 
+
     public float respawnDelay = 2f; // Delay before respawning
 
     private Transform[] respawnPoints;
@@ -18,7 +26,20 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         playerMovement = GetComponent<Playermovement>();
         rb = GetComponent<Rigidbody>();
-
+        if (healthSlider == null)
+        {
+            GameObject sliderObj = GameObject.FindGameObjectWithTag("Health");
+            if (sliderObj != null)
+            {
+                healthSlider = sliderObj.GetComponent<Slider>();
+            }
+        }
+        if (healthSlider != null)
+        {
+            healthSlider.minValue = 0f;
+            healthSlider.maxValue = 1f;
+            healthSlider.value = 1f;
+        }
 
         // Find all respawn points dynamically
         GameObject[] respawnObjects = GameObject.FindGameObjectsWithTag("Respawn");
@@ -40,6 +61,11 @@ public class PlayerHealth : MonoBehaviour
         if (isRespawning) return; // Prevent taking damage while respawning
 
         currentHealth -= damage;
+        if (currentHealth < 0) currentHealth = 0;
+        if (healthSlider != null)
+        {
+            healthSlider.value = (float)currentHealth / maxHealth;
+        }
         Debug.Log("Player took damage, current health: " + currentHealth);
 
         if (currentHealth <= 0)
@@ -47,6 +73,7 @@ public class PlayerHealth : MonoBehaviour
             currentHealth = 0;
             StartCoroutine(Respawn());
         }
+
     }
 
     public void Heal(int amount)
@@ -54,6 +81,11 @@ public class PlayerHealth : MonoBehaviour
         if (isRespawning) return;
 
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
+        if (healthSlider != null)
+        {
+            healthSlider.value = (float)currentHealth / maxHealth;
+        }
         Debug.Log("Player healed, current health: " + currentHealth);
     }
 
@@ -87,7 +119,10 @@ public class PlayerHealth : MonoBehaviour
         // Restore health and re-enable movement
         currentHealth = maxHealth;
         isRespawning = false;
-
+        if (healthSlider != null)
+        {
+            healthSlider.value = 1f; // or (float) currentHealth / maxHealth
+        }
 
         if (playerMovement != null)
         {
