@@ -233,9 +233,19 @@ public class MultiplayerHandler : NetworkBehaviour
         SpawnBullets(bulletTypeIndex, shooterNetRef, directionWithSpread);
     }
 
-    [Rpc(SendTo.Everyone)]
-    public void ReturnToPool_RPC()
+    public void PoolReturn(Bullet bullet)
     {
-        NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
+        ReturnToPool_RPC(bullet.NetworkObject);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ReturnToPool_RPC(NetworkObjectReference bulletNetObjRef)
+    {
+        // Get bullet information
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+
+        // return to pool
+        NetworkObjectPool.Singleton.ReturnNetworkObject(bulletNetObj, prefab);
+        bulletNetObj.Despawn();
     }
 }
