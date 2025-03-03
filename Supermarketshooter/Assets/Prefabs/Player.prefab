@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5355502365269865072}
-  - component: {fileID: 7173834954493094163}
   m_Layer: 3
   m_Name: Orientation
   m_TagString: Untagged
@@ -32,42 +31,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7415768035927167576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7173834954493094163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3441753257099105844}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da52bf8bbc1de48cfb221a6ff30f7972, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  NetworkTransformExpanded: 1
-  AuthorityMode: 0
-  TickSyncChildren: 0
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  SwitchTransformSpaceWhenParented: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &3631127556249028171
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,6 +318,7 @@ MonoBehaviour:
   gun: {fileID: 8466174746855133879}
   fallMultiplier: 10
   coyoteTime: 0.2
+  canMove: 1
 --- !u!114 &3771365470699058284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -690,6 +654,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5785373674826499521, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5785373674826499521, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2772417417
       objectReference: {fileID: 0}
@@ -713,7 +681,8 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5785373674826499521, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
