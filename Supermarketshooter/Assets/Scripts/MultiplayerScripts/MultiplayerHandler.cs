@@ -238,7 +238,7 @@ public class MultiplayerHandler : NetworkBehaviour
         ReturnToPool_RPC(bullet.NetworkObject);
     }
 
-    [Rpc(SendTo.Server)]
+    [Rpc(SendTo.ClientsAndHost)]
     public void ReturnToPool_RPC(NetworkObjectReference bulletNetObjRef)
     {
         // Get bullet information
@@ -246,6 +246,6 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // return to pool
         NetworkObjectPool.Singleton.ReturnNetworkObject(bulletNetObj, prefab);
-        bulletNetObj.Despawn();
+        //bulletNetObj.Despawn();
     }
 }
