@@ -4390,7 +4390,7 @@ MonoBehaviour:
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: c79d8fbdeee30e8469671f9f3d51b081, type: 2}
-    TickRate: 30
+    TickRate: 60
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
     ConnectionData: 
@@ -5643,6 +5643,7 @@ GameObject:
   - component: {fileID: 1794112181}
   - component: {fileID: 1794112179}
   - component: {fileID: 1794112180}
+  - component: {fileID: 1794112182}
   m_Layer: 0
   m_Name: MultiplayerHandler
   m_TagString: Untagged
@@ -5689,6 +5690,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   bulletList: {fileID: 11400000, guid: 5e444b03d8e3d6d4cacc97673f114261, type: 2}
+  prefab: {fileID: 4978353064090164125, guid: 7921f95f73895184e90be32127c36820, type: 3}
 --- !u!4 &1794112181
 Transform:
   m_ObjectHideFlags: 0
@@ -5704,6 +5706,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1794112182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794112178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 850f27c472774814f9fae4979be05959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  PooledPrefabsList:
+  - Prefab: {fileID: 4978353064090164125, guid: 7921f95f73895184e90be32127c36820, type: 3}
+    PrewarmCount: 10
 --- !u!1 &1827875993
 GameObject:
   m_ObjectHideFlags: 0

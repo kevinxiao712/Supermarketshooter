@@ -11,6 +11,12 @@ public class MultiplayerHandler : NetworkBehaviour
 
     [SerializeField] private BulletList bulletList;
 
+    [SerializeField] private GameObject prefab;
+
+    private void Start()
+    {
+        NetworkManager.Singleton.OnServerStarted += SpawnBulletsStart;
+    }
 
     private void Awake()
     {
@@ -135,42 +141,93 @@ public class MultiplayerHandler : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void ServerChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooter, RpcParams rpcParams = default)
+    public void ServerChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef, RpcParams rpcParams = default)
     {
         Debug.Log("ServerChangeBulletTransformRPC started sending change bullet to server");
 
         //bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
-
-        //bullet.transform.position = attackPoint.position;
-        //bullet.gameObject.SetActive(true);
-
-        //bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         //Bullet bullet = bulletNetObj.GetComponent<Bullet>();
 
-        //bullet.transform.position = attackPoint.position;
+        //shooterNetRef.TryGet(out NetworkObject shooterNetObj);
+        //Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
+
+        //bullet.transform.position = shooterGB.attackPoint.position;
         //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
         //bullet.gameObject.SetActive(true);
 
-        EveryoneChangeBulletTransform_RPC(bulletNetObjRef, directionWithSpread, shooter);
+        //Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        //rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
+
+        EveryoneChangeBulletTransform_RPC(bulletNetObjRef, directionWithSpread, shooterNetRef);
     }
 
 
-    [Rpc(SendTo.Everyone)]
+    [Rpc(SendTo.ClientsAndHost)]
     private void EveryoneChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef)
     {
         Debug.Log("EveryoneChangeBulletTransformRPC started sending change bullet to everyone");
 
-        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
-        Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+        NetworkObject netObj =
+           NetworkObjectPool.Singleton.GetNetworkObject(prefab, new Vector3(0, 3, 0), Quaternion.identity);
+
+        Bullet bullet = netObj.GetComponent<Bullet>();
+
+        bullet.prefab = prefab;
+        if (!netObj.IsSpawned) netObj.Spawn(true);
+        bullet.Invoke("Deactivate", bullet.lifetime);
+
 
         shooterNetRef.TryGet(out NetworkObject shooterNetObj);
         Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
 
+        bullet.gameObject.SetActive(true);
         bullet.transform.position = shooterGB.attackPoint.position;
         bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
-        bullet.gameObject.SetActive(true);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
+    }
+
+    private void SpawnBulletsStart()
+    {
+        NetworkManager.Singleton.OnServerStarted -= SpawnBulletsStart;
+        NetworkObjectPool.Singleton.OnNetworkSpawn();
+    }
+
+    public void SpawnBullets(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
+    {
+        // Bullet bulletPrefab = bulletList.listBullets[bulletTypeIndex];
+
+        // Get bullet from pool
+        NetworkObject netObj =
+            NetworkObjectPool.Singleton.GetNetworkObject(prefab, new Vector3(0, 3, 0), Quaternion.identity);
+
+        // Get bullet actual from network object reference
+        Bullet bullet = netObj.GetComponent<Bullet>();
+
+        // prepare bullet to be returned to pool
+        bullet.prefab = prefab;
+        // spawn the bullet 
+        if (!netObj.IsSpawned) netObj.Spawn(true);
+        bullet.Invoke("Deactivate", bullet.lifetime); // start despawn countdown
+
+        // Get shooter information
+        shooterNetRef.TryGet(out NetworkObject shooterNetObj);
+        Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
+
+        // Affect how bullet flys
+        bullet.transform.position = shooterGB.attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+
+        // Apply force to bullet
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
+    }
+
+    // allows clients to spawn bullets on server
+    [Rpc(SendTo.Server)]
+    private void SpawnBullets_RPC(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
+    {
+        SpawnBullets(bulletTypeIndex, shooterNetRef, directionWithSpread);
     }
 }

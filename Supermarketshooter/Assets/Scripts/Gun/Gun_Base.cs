@@ -43,7 +43,6 @@ public class Gun_Base : NetworkBehaviour
     // Multiplayer fields
     [SerializeField] private BulletList bulletList;
 
-
     private void Awake()
     {
         // Initialize bullets and set gun to ready state
@@ -54,7 +53,7 @@ public class Gun_Base : NetworkBehaviour
     public void Start()
     {
         if (!IsOwner) return;
-        PreloadBullets();
+        //PreloadBullets();
     }
 
     private void Update()
@@ -135,12 +134,15 @@ public class Gun_Base : NetworkBehaviour
         // Calculate bullet direction with spread
         Vector3 directionWithSpread = CalculateSpreadDirection();
 
-        // Retrieve a bullet from the pool
-        GameObject bullet = GetBullet();
+        // doing this server side now 
+        // Retrieve a bullet from the pool 
+        MultiplayerHandler.Instance.SpawnBullets(0, NetworkObject, directionWithSpread);
 
-        MultiplayerHandler.Instance.ServerChangeBulletTransform_RPC(bullet.GetComponent<NetworkObject>(), directionWithSpread, this.NetworkObject);
+        // ALL OF THIS HAS TO HAPPEN SERVER SIDE
+        //bullet.transform.position = attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
 
-        // Apply force to bullet
+        //// Apply force to bullet
         //Rigidbody rb = bullet.GetComponent<Rigidbody>();
         //rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
 
@@ -260,21 +262,22 @@ public class Gun_Base : NetworkBehaviour
         {
             if (!bullet.activeInHierarchy)
             {
-                //Debug.Log("Bullet Found!");
-                //return bullet;
+                Debug.Log("Bullet Found!");
+                return bullet;
             }
         }
 
         Debug.Log("Generating new bullet...");
-        // Generate new bullet
-        MultiplayerHandler.Instance.GenerateBullets(0, this);
-        // Return the newest bullet generated
-        return bulletPool[bulletPool.Count - 1];
 
-        //// If all bullets are in use, create a new one
-        //GameObject newBullet = Instantiate(bulletPrefab);
-        //bulletPool.Add(newBullet);
-        //return newBullet;
+        //// Generate new bullet
+        //MultiplayerHandler.Instance.GenerateBullets(0, this);
+        //// Return the newest bullet generated
+        //return bulletPool[bulletPool.Count - 1];
+
+        // If all bullets are in use, create a new one
+        GameObject newBullet = Instantiate(bulletPrefab);
+        bulletPool.Add(newBullet);
+        return newBullet;
     }
 
     // Allows the server to create the bullets but still save the bullets to the client
