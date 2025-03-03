@@ -141,18 +141,20 @@ public class Playermovement : NetworkBehaviour
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
 
-        if (grounded)
+        if (grounded && !wasGrounded)
         {
+ 
             jumpCount = 0;
             coyoteTimeCounter = coyoteTime;
         }
-        else
+        else if (!grounded)
         {
-            // Decrease coyote time if not grounded
             coyoteTimeCounter -= Time.deltaTime;
         }
 
+
         wasGrounded = grounded;
+
 
 
 
@@ -179,13 +181,25 @@ public class Playermovement : NetworkBehaviour
 
 
 
-        if (Input.GetKeyDown(jumpKey) && readyToJump && jumpCount < maxJumps && (grounded || coyoteTimeCounter > 0f))
+        if (Input.GetKeyDown(jumpKey) && jumpCount < maxJumps && readyToJump)
         {
-            coyoteTimeCounter = 0f;
-            readyToJump = false;
-            Jump();
-            jumpCount++; // We used a jump
-            Invoke(nameof(ResetJump), jumpCooldown);
+            Debug.Log("Jump pressed. jumpCount=" + jumpCount +
+  " | coyoteTimeCounter=" + coyoteTimeCounter +
+  " | readyToJump=" + readyToJump);
+            if (jumpCount == 0)
+            {
+
+                if (grounded || coyoteTimeCounter > 0f)
+                {
+                    DoTheJump();
+                }
+            }
+
+            else
+            {
+
+                DoTheJump();
+            }
         }
 
 
@@ -195,7 +209,14 @@ public class Playermovement : NetworkBehaviour
             ui.SetActive(!ui.activeInHierarchy);
         }
     }
-
+    void DoTheJump()
+    {
+        coyoteTimeCounter = 0f; 
+        readyToJump = false;
+        Jump();
+        jumpCount++;
+        Invoke(nameof(ResetJump), jumpCooldown);
+    }
     public void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
