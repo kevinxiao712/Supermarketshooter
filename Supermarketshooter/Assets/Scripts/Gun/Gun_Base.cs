@@ -136,7 +136,7 @@ public class Gun_Base : NetworkBehaviour
 
         // doing this server side now 
         // Retrieve a bullet from the pool 
-        MultiplayerHandler.Instance.SpawnBullets(0, NetworkObject, directionWithSpread);
+        MultiplayerHandler.Instance.SpawnBullets_RPC(0, NetworkObject, directionWithSpread);
 
         // ALL OF THIS HAS TO HAPPEN SERVER SIDE
         //bullet.transform.position = attackPoint.position;

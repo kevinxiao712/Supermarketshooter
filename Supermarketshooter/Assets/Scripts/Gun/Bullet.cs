@@ -29,6 +29,7 @@ public class Bullet : NetworkBehaviour
         // if already returned to pool
         if (!NetworkObject.IsSpawned) return;
         // return it to the pool
-        NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
+        //NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
+        MultiplayerHandler.Instance.ReturnToPool_RPC();
     }
 }

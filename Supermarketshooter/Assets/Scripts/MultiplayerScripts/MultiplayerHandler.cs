@@ -15,7 +15,7 @@ public class MultiplayerHandler : NetworkBehaviour
 
     private void Start()
     {
-        NetworkManager.Singleton.OnServerStarted += SpawnBulletsStart;
+        NetworkManager.Singleton.OnClientStarted += SpawnBulletsStart;
     }
 
     private void Awake()
@@ -190,10 +190,10 @@ public class MultiplayerHandler : NetworkBehaviour
 
     private void SpawnBulletsStart()
     {
-        NetworkManager.Singleton.OnServerStarted -= SpawnBulletsStart;
         NetworkObjectPool.Singleton.OnNetworkSpawn();
     }
 
+    // Actual creation of bullets
     public void SpawnBullets(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
     {
         // Bullet bulletPrefab = bulletList.listBullets[bulletTypeIndex];
@@ -207,9 +207,7 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // prepare bullet to be returned to pool
         bullet.prefab = prefab;
-        // spawn the bullet 
-        if (!netObj.IsSpawned) netObj.Spawn(true);
-        bullet.Invoke("Deactivate", bullet.lifetime); // start despawn countdown
+        
 
         // Get shooter information
         shooterNetRef.TryGet(out NetworkObject shooterNetObj);
@@ -219,6 +217,10 @@ public class MultiplayerHandler : NetworkBehaviour
         bullet.transform.position = shooterGB.attackPoint.position;
         bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
 
+        // spawn the bullet 
+        if (!netObj.IsSpawned) netObj.Spawn(true);
+        bullet.Invoke("Deactivate", bullet.lifetime); // start despawn countdown
+
         // Apply force to bullet
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
@@ -226,8 +228,14 @@ public class MultiplayerHandler : NetworkBehaviour
 
     // allows clients to spawn bullets on server
     [Rpc(SendTo.Server)]
-    private void SpawnBullets_RPC(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
+    public void SpawnBullets_RPC(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
     {
         SpawnBullets(bulletTypeIndex, shooterNetRef, directionWithSpread);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void ReturnToPool_RPC()
+    {
+        NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
     }
 }
