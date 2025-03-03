@@ -40,16 +40,18 @@ public class MultiplayerHandler : NetworkBehaviour
         {
             for (int i = 0; i < magazineSize; i++)
             {
-                // Create new bullet
-                GameObject newBullet = Instantiate(bulletPrefab.gameObject);
-                //newBullet.SetActive(false);
+                GenerateBulletsRPC(bulletTypeIndex, shooter, rpcParams);
 
-                // Get Network Object bullshit
-                NetworkObject newBulletNetObj = newBullet.GetComponent<NetworkObject>();
-                newBulletNetObj.Spawn(true); // bool for destroy when owner is destroyed
+                //// Create new bullet
+                //GameObject newBullet = Instantiate(bulletPrefab.gameObject);
+                ////newBullet.SetActive(false);
 
-                // Add bullet to bullet list
-                AddToBulletListRPC(shooter, newBulletNetObj);
+                //// Get Network Object bullshit
+                //NetworkObject newBulletNetObj = newBullet.GetComponent<NetworkObject>();
+                //newBulletNetObj.Spawn(true); // bool for destroy when owner is destroyed
+
+                //// Add bullet to bullet list
+                //AddToBulletListRPC(shooter, newBulletNetObj, rpcParams);
             }
         }
     }
@@ -62,7 +64,7 @@ public class MultiplayerHandler : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    private void GenerateBulletsRPC(int bulletTypeIndex, NetworkObjectReference shooter, RpcParams rpcParams = default)
+    private void GenerateBulletsRPC(int bulletTypeIndex, NetworkObjectReference shooter, RpcParams rpcParams)
     {
         Debug.Log("sent to server, Generate Bullets started");
 
@@ -79,12 +81,13 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // Create new bullet
         GameObject newBullet = Instantiate(bulletPrefab.gameObject);
-        newBullet.transform.position = gunBase.attackPoint.position;
+        //newBullet.transform.position = gunBase.attackPoint.position;
         newBullet.SetActive(false);
 
         // Get Network Object bullshit
         NetworkObject newBulletNetObj = newBullet.GetComponent<NetworkObject>();
         newBulletNetObj.Spawn(true); // bool for destroy when owner is destroyed
+        newBulletNetObj.gameObject.SetActive(false);
         newBulletNetObj.transform.position = gunBase.attackPoint.position;
 
         // Check if client that created bullet is connected, then tell them stuff
@@ -92,15 +95,19 @@ public class MultiplayerHandler : NetworkBehaviour
         {
             var client = NetworkManager.ConnectedClients[clientID];
             // client.PlayerObject;
-            AddToBulletListRPC(shooter, newBulletNetObj);
+            AddToBulletListRPC(shooter, newBulletNetObj, rpcParams);
         }
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void AddToBulletListRPC(NetworkObjectReference shooter, NetworkObjectReference bulletToAdd)
+    private void AddToBulletListRPC(NetworkObjectReference shooter, NetworkObjectReference bulletToAdd, RpcParams rpcParams)
     {
+        if (OwnerClientId != rpcParams.Receive.SenderClientId)
+            return;
+
         // Get the shooter actual from the network reference
         shooter.TryGet(out NetworkObject player);
+
         // Get the gunbase of that shooter
         Gun_Base gunBase = player.GetComponentInChildren<Gun_Base>();
 
@@ -125,5 +132,45 @@ public class MultiplayerHandler : NetworkBehaviour
         GameObject bullet = bTA.gameObject;
 
         bullet.SetActive(false);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ServerChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooter, RpcParams rpcParams = default)
+    {
+        Debug.Log("ServerChangeBulletTransformRPC started sending change bullet to server");
+
+        //bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+
+        //bullet.transform.position = attackPoint.position;
+        //bullet.gameObject.SetActive(true);
+
+        //bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        //Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+
+        //bullet.transform.position = attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        //bullet.gameObject.SetActive(true);
+
+        EveryoneChangeBulletTransform_RPC(bulletNetObjRef, directionWithSpread, shooter);
+    }
+
+
+    [Rpc(SendTo.Everyone)]
+    private void EveryoneChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef)
+    {
+        Debug.Log("EveryoneChangeBulletTransformRPC started sending change bullet to everyone");
+
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        Bullet bullet = bulletNetObj.GetComponent<Bullet>();
+
+        shooterNetRef.TryGet(out NetworkObject shooterNetObj);
+        Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
+
+        bullet.transform.position = shooterGB.attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.gameObject.SetActive(true);
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
     }
 }
