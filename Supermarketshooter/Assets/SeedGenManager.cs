@@ -77,15 +77,37 @@ public class SeedGenManager : MonoBehaviour
         return seed;
     }
 
+    /// <summary>
+    /// Makes all players restock the item spawn points.
+    /// </summary>
     public void SendRestockSignalToAll() {
         // Restock self
-        Restock();
+        Restock(1, 1, 1, 1, 1);
 
         // Send Restock signal to each other player.
         // TODO: Send signal to all players!
     }
 
-    public void Restock() {
+    /// <summary>
+    /// Processes all produce spawn points to add a new item to them.
+    /// </summary>
+    /// <param name="appleProb"></param>
+    /// <param name="cornProb"></param>
+    /// <param name="eggProb"></param>
+    /// <param name="milkProb"></param>
+    /// <param name="oilProb"></param>
+    public void Restock(float appleProb, float cornProb, float drumstickProb, float eggProb, float oilProb) {
+        // Fill out the spawn data list with the new probabilities
+        allSpawnData[0].probability = appleProb;
+        allSpawnData[1].probability = cornProb;
+        allSpawnData[2].probability = drumstickProb;
+
+        // Destroy all items that have not been grabbed from the produce spawners
+        foreach (ProduceSpawner produceSpawner in allProduceSpawners) {
+            produceSpawner.DestroyItemOnProduceSpawner();
+        }
+
+        // Sum probabilities to get the proper probabilities for each item to spawn
         int i = 0;
         foreach (ProduceSpawnData spawnData in allSpawnData) {
             spawnDenominator += spawnData.probability;
@@ -93,6 +115,7 @@ public class SeedGenManager : MonoBehaviour
             i++;
         }
 
+        // Spawn an item at each produce spawner based on the seed
         foreach (ProduceSpawner produceSpawner in allProduceSpawners) {
             
             spawnNumerator = Random.Range(0, spawnDenominator);
@@ -107,6 +130,7 @@ public class SeedGenManager : MonoBehaviour
         }
 
     }
+
 
     public IEnumerator RestockTimer(float restockTimer) {
         yield return new WaitForSeconds(restockTimer);
