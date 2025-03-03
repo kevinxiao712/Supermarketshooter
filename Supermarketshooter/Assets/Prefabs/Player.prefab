@@ -297,6 +297,7 @@ MonoBehaviour:
   walkSpeed: 5
   sprintSpeed: 10
   groundDrag: 5
+  butterGroundDrag: 0.5
   jumpforce: 7
   jumpCooldown: 0.25
   airMultiplier: 0.1

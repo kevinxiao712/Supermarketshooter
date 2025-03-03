@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 public class Bullet : NetworkBehaviour
 {
-    public float lifetime = 3f;
+    public float lifetime = 8f;
     public Rigidbody rb;
     public int damage;
     public Gun_Base gun;
@@ -31,6 +31,7 @@ public class Bullet : NetworkBehaviour
     public int minDamage = 10;
     public float explosiveForce;
     private Collider[] hits;
+    private bool butterBullet;
 
     public void Awake()
     {
@@ -59,6 +60,10 @@ public class Bullet : NetworkBehaviour
         {
             // 3) Inflict damage on the player
             playerHealth.TakeDamage(damage);
+            if(butterBullet)
+            {
+                collision.gameObject.GetComponent<Playermovement>().GotButtered();
+            }
         }
 
         // 4) Deactivate the bullet (whether it hits a player or something else)

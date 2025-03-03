@@ -10,11 +10,14 @@ public class Playermovement : NetworkBehaviour
     public float walkSpeed;
     public float sprintSpeed;
     public float groundDrag;
+    public float butterGroundDrag;
+    private float baseGroundDrag;
     public float jumpforce;
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
-
+    [HideInInspector]
+    public bool isButtered = false;
 
     [Header("Keys")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -79,7 +82,7 @@ public class Playermovement : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
-
+        baseGroundDrag = groundDrag;
         // checks if this player is the local one anything that would be set for
         // only this player should be set in this statement(camera, orientation, etc)
         if (IsLocalPlayer)
@@ -287,6 +290,22 @@ public class Playermovement : NetworkBehaviour
         {
             state = MovementState.air;
         }
+    }
+
+    public void GotButtered()
+    {
+        if (!isButtered)
+        {
+            StartCoroutine(ButterTimer());
+        }
+       
+    }
+
+    public IEnumerator ButterTimer()
+    {
+        groundDrag = butterGroundDrag;
+        yield return new WaitForSeconds(3);
+        groundDrag = baseGroundDrag;
     }
 
 }
