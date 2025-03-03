@@ -51,7 +51,18 @@ public class Bullet : NetworkBehaviour
         {
             Explode();
         }
-        Deactivate();
+      
+        // 2) Check if the collided object has a PlayerHealth script
+        PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
+        if (playerHealth != null)
+        {
+            // 3) Inflict damage on the player
+            playerHealth.TakeDamage(damage);
+        }
+
+        // 4) Deactivate the bullet (whether it hits a player or something else)
+            Deactivate();
     }
     public void SetNewType(Gun_Piece_Base part)
     {
