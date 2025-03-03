@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Bottle_Part : Gun_Piece_Base
 {
+    public Material stealthMaterial;
+    Material baseMaterial;
     public override void ApplyStateEffects()
     {
 
@@ -17,14 +19,16 @@ public class Bottle_Part : Gun_Piece_Base
                 gun.spread = spread;
                 // Example: Modify gun stats
                 break;
+
             case GunPieceState.Mid:
-                Debug.Log("add damage");
-                // Example: Neutral state
+                baseMaterial = gun.playerObject.GetComponent<MeshRenderer>().material;
+                gun.playerObject.GetComponent<MeshRenderer>().material = stealthMaterial;
                 break;
             case GunPieceState.Back:
                 gun.shootForce = shootForce;
                 gun.magazineSize = magazineSize;
                 gun.isFiringBullets = true;
+                gun.playerObject.GetComponent<MeshRenderer>().material = baseMaterial;
                 // Example: Debuff or different behavior
                 break;
         }

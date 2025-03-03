@@ -107,8 +107,10 @@ MonoBehaviour:
   playerRb: {fileID: 0}
   recoilForce: 0
   gun: {fileID: 0}
+  damageMuliplayer: 1
   Bullets: {fileID: 0}
   isFiringBullets: 1
+  stealthMaterial: {fileID: 2100000, guid: 1a67c59a879c7be4a8852a1cc86cdfbc, type: 2}
 --- !u!65 &3081295998322482726
 BoxCollider:
   m_ObjectHideFlags: 0

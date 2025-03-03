@@ -128,5 +128,6 @@ MonoBehaviour:
   playerRb: {fileID: 0}
   recoilForce: 0
   gun: {fileID: 0}
+  damageMuliplayer: 2
   Bullets: {fileID: 0}
   isFiringBullets: 1

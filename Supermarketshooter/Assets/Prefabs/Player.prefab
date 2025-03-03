@@ -301,6 +301,7 @@ MonoBehaviour:
   jumpforce: 7
   jumpCooldown: 0.25
   airMultiplier: 0.1
+  isButtered: 0
   jumpKey: 32
   sprintKey: 304
   playerHeight: 2
@@ -678,6 +679,18 @@ PrefabInstance:
       propertyPath: magazineSize
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: playerHealth
+      value: 
+      objectReference: {fileID: 613266948891892626}
+    - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: playerObject
+      value: 
+      objectReference: {fileID: 8983741406583897661}
+    - target: {fileID: 8583474683621868094, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
+      propertyPath: playermovement
+      value: 
+      objectReference: {fileID: 4747668697399292336}
     - target: {fileID: 9221457872355446899, guid: e8da5327e74f69e429dae09216fa3be8, type: 3}
       propertyPath: m_Layer
       value: 3

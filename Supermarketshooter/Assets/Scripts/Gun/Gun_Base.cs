@@ -45,6 +45,14 @@ public class Gun_Base : NetworkBehaviour
     // Multiplayer fields
     [SerializeField] private BulletList bulletList;
 
+    //References
+    public Playermovement playermovement;
+    public GameObject playerObject;
+    public PlayerHealth playerHealth;
+    //gun Passives
+    [HideInInspector]
+     public int DamageMuliplayer = 1;
+
 
     private void Awake()
     {
@@ -140,6 +148,7 @@ public class Gun_Base : NetworkBehaviour
         if (isFiringBullets)
         { // Retrieve a bullet from the pool
             GameObject bullet = GetBullet();
+            bullet.GetComponent<Bullet>().damageMult = DamageMuliplayer;
             ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
         }
         else
@@ -263,7 +272,7 @@ public class Gun_Base : NetworkBehaviour
         Debug.Log("Generating new bullet...");
         // Generate new bullet
         MultiplayerHandler.Instance.GenerateBullets(0, this);
-
+        UpdateBullet(bulletPool[bulletPool.Count - 1]);
         foreach (GameObject bullet in bulletPool)
         {
             bullet.GetComponent<Bullet>().gun = this;
@@ -333,5 +342,13 @@ public class Gun_Base : NetworkBehaviour
             }
         }
     }
+    public void UpdateBullet(GameObject bullet)
+    {
+      
+      bullet.GetComponent<Bullet>().SetNewType(collectedGunPieces[0]);
+
+            
         
+    }
+
 }

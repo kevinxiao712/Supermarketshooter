@@ -12,7 +12,7 @@ public class Bullet : NetworkBehaviour
     public PhysicsMaterial bouncy;
      Vector3 originalSize;
      Vector3 bigSize;
-
+    public int damageMult = 1;
 
 
 
@@ -43,11 +43,11 @@ public class Bullet : NetworkBehaviour
     }
     void OnEnable()
     {
-        Invoke("Deactivate", lifetime);
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        Debug.Log(collision.gameObject.name);
         if (isExplosive)
         {
             Explode();
@@ -59,7 +59,7 @@ public class Bullet : NetworkBehaviour
         if (playerHealth != null)
         {
             // 3) Inflict damage on the player
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage(damage * damageMult);
             if(butterBullet)
             {
                 collision.gameObject.GetComponent<Playermovement>().GotButtered();
@@ -82,6 +82,7 @@ public class Bullet : NetworkBehaviour
             case Bottle_Part:
                 rb.useGravity = false;
                 transform.localScale = bigSize;
+                gameObject.layer = 9;
 
                 break;
             case Eggs_Part:

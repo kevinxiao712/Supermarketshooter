@@ -18,7 +18,6 @@ public class Gun_Piece_Base : MonoBehaviour
     public Rigidbody playerRb;
     public float recoilForce;
     public Gun_Base gun;
-
     public GameObject Bullets;
     public bool isFiringBullets = true;
 
