@@ -1,73 +1,103 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
-    // Maximum health for the player.
     public int maxHealth = 100;
-    // Current health, set at runtime.
     public int currentHealth;
+    public float respawnDelay = 2f; // Delay before respawning
 
-    // Initialize current health at the start.
+    private Transform[] respawnPoints;
+    private bool isRespawning = false;
 
-    public Transform[] respawnPoints;
+
+    private Playermovement playerMovement;
+    private Rigidbody rb;
     void Start()
     {
         currentHealth = maxHealth;
-    }
-    void Awake()
-    {
-        // If no respawn points have been assigned manually, search for them by tag.
-        if (respawnPoints == null || respawnPoints.Length == 0)
+        playerMovement = GetComponent<Playermovement>();
+        rb = GetComponent<Rigidbody>();
+
+
+        // Find all respawn points dynamically
+        GameObject[] respawnObjects = GameObject.FindGameObjectsWithTag("Respawn");
+        respawnPoints = new Transform[respawnObjects.Length];
+
+        for (int i = 0; i < respawnObjects.Length; i++)
         {
-            GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("RespawnPoint");
-            respawnPoints = new Transform[spawnPoints.Length];
-            for (int i = 0; i < spawnPoints.Length; i++)
-            {
-                respawnPoints[i] = spawnPoints[i].transform;
-            }
+            respawnPoints[i] = respawnObjects[i].transform;
+        }
+
+        if (respawnPoints.Length == 0)
+        {
+            Debug.LogWarning("No respawn points found in the scene!");
         }
     }
 
     public void TakeDamage(int damage)
     {
+        if (isRespawning) return; // Prevent taking damage while respawning
+
         currentHealth -= damage;
         Debug.Log("Player took damage, current health: " + currentHealth);
 
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            Die();
+            StartCoroutine(Respawn());
         }
     }
 
     public void Heal(int amount)
     {
-        currentHealth += amount;
-        if (currentHealth > maxHealth)
-            currentHealth = maxHealth;
+        if (isRespawning) return;
 
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         Debug.Log("Player healed, current health: " + currentHealth);
     }
 
-    private void Die()
+    private IEnumerator Respawn()
     {
-        Debug.Log("Player has died.");
-    }
+        isRespawning = true;
+        Debug.Log("Player has died. Respawning in " + respawnDelay + " seconds...");
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = false;
+        }
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.isKinematic = true; // Stops physics interactions during respawn
+        }
 
-    private void Respawn()
-    {
-        if (respawnPoints != null && respawnPoints.Length > 0)
+        yield return new WaitForSeconds(respawnDelay); // Wait before respawning
+
+        if (respawnPoints.Length > 0)
         {
             int index = Random.Range(0, respawnPoints.Length);
-            Transform respawnPoint = respawnPoints[index];
-            transform.position = respawnPoint.position;
+            transform.position = respawnPoints[index].position;
             Debug.Log("Player respawned at respawn point: " + index);
         }
         else
         {
-            Debug.LogWarning("No respawn points assigned!");
+            Debug.LogWarning("No respawn points available!");
         }
-        // Reset the player's health after respawning.
+
+        // Restore health and re-enable movement
         currentHealth = maxHealth;
+        isRespawning = false;
+
+
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = true;
+        }
+
+        // Unfreeze player
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+        }
     }
 }

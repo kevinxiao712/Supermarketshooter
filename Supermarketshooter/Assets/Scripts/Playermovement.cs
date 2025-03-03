@@ -56,13 +56,15 @@ public class Playermovement : NetworkBehaviour
 
     public Gun_Base gun;
 
+    [Header("Falling")]
+    public float fallMultiplier = 5f;  // Tweak as needed
 
 
     [Header("Coyote Time")]
     public float coyoteTime = 0.2f;          // Duration to still allow jumping after stepping off
     private float coyoteTimeCounter;
 
-
+    public bool canMove = true;
 
     public enum MovementState
     {
@@ -132,6 +134,7 @@ public class Playermovement : NetworkBehaviour
         // only allow the active player to control this object
         if (!IsOwner) return;
 
+
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
 
@@ -151,7 +154,10 @@ public class Playermovement : NetworkBehaviour
 
 
         MyInput(); // adding hide ui to this
-        MovePlayer();
+        if (canMove)
+        {
+            MovePlayer();
+        }
         SpeedControl();
         StateHandler();
         if (grounded)
@@ -255,7 +261,16 @@ public class Playermovement : NetworkBehaviour
         return Vector3.ProjectOnPlane(moveDirection, slopHit.normal).normalized;
     }
 
+    private void FixedUpdate()
+    {
+        if (!IsOwner) return;
 
+
+        if (!grounded && !OnSlope() && rb.linearVelocity.y < 0)
+        {
+            rb.AddForce(Vector3.down * fallMultiplier, ForceMode.Acceleration);
+        }
+    }
     public void StateHandler()
     {
         if (grounded && Input.GetKey(sprintKey))
