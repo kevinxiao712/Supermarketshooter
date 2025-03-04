@@ -6,18 +6,20 @@ TagManager:
   tags:
   - Bullet
   - RespawnPoint
+  - Health
+  - Dead
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - whatIsGround
-  - 
-  - 
-  - 
-  - 
+  - GhostBullet
+  - outerWall
+  - bigbullet
+  - bullets
   - 
   - 
   - 

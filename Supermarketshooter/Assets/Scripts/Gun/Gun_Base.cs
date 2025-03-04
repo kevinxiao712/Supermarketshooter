@@ -14,12 +14,14 @@ public class Gun_Base : NetworkBehaviour
     public float timeBetweenShooting, spread, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
+    public bool isFiringBullets = true;
+    public float damage;
 
     // Internal tracking variables
     private int bulletsLeft, bulletsShot;
-    private bool shooting, readyToShoot, reloading;
+    private bool shooting, readyToShoot;
     private List<GameObject> bulletPool = new List<GameObject>();
-
+    public bool PopingOut;
     // Recoil settings
     public Rigidbody playerRb;
     public float recoilForce;
@@ -32,6 +34,9 @@ public class Gun_Base : NetworkBehaviour
     public bool allowInvoke = true;
 
     // Pickup system
+    private List<Gun_Piece_Base> activeGunPieces = new List<Gun_Piece_Base>();
+    private List<GameObject> activeGunPiecesObject = new List<GameObject>();
+    //holders;
     private List<Gun_Piece_Base> collectedGunPieces = new List<Gun_Piece_Base>();
     private List<GameObject> collectedGunPiecesObject = new List<GameObject>();
     public List<Transform> gunPartPositions;
@@ -42,6 +47,14 @@ public class Gun_Base : NetworkBehaviour
 
     // Multiplayer fields
     [SerializeField] private BulletList bulletList;
+
+    //References
+    public Playermovement playermovement;
+    public GameObject playerObject;
+    public PlayerHealth playerHealth;
+    //gun Passives
+    [HideInInspector]
+     public int DamageMuliplayer = 1;
 
 
     private void Awake()
@@ -55,6 +68,7 @@ public class Gun_Base : NetworkBehaviour
     {
         if (!IsOwner) return;
         PreloadBullets();
+        transform.parent = fpsCam.transform;
     }
 
     private void Update()
@@ -96,14 +110,20 @@ public class Gun_Base : NetworkBehaviour
     private void HandleInput()
     {
         // Check for shooting input
-        shooting = allowButtonHold ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
+        if (activeGunPieces.Count < 3)
+        {
+            Debug.Log("less then 3"); 
+            return;
+        }
 
+        shooting = allowButtonHold ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
+        
         // Handle reloading input
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
-        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) Reload();
+        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !PopingOut) ReloadPopOut();
+        if (readyToShoot && shooting && !PopingOut && bulletsLeft <= 0) ReloadPopOut();
 
         // Handle shooting
-        if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+        if (readyToShoot && shooting && !PopingOut && bulletsLeft > 0)
         {
             bulletsShot = 0;
             Shoot();
@@ -134,17 +154,13 @@ public class Gun_Base : NetworkBehaviour
         // Calculate bullet direction with spread
         Vector3 directionWithSpread = CalculateSpreadDirection();
 
-        // Retrieve a bullet from the pool
-        GameObject bullet = GetBullet();
-        ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
-        //bullet.transform.position = attackPoint.position;
-        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
-        //bullet.SetActive(true);
-
-        // Apply force to bullet
-        //Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        //rb.linearVelocity = directionWithSpread.normalized * shootForce + fpsCam.transform.up * upwardForce;
-
+        if (isFiringBullets)
+        { // Retrieve a bullet from the pool
+            GameObject bullet = GetBullet();
+            bullet.GetComponent<Bullet>().damageMult = DamageMuliplayer;
+            ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+        }
+       
         // Instantiate muzzle flash if available
         if (muzzleFlash != null)
             Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
@@ -206,18 +222,30 @@ public class Gun_Base : NetworkBehaviour
         allowInvoke = true;
     }
 
-    private void Reload()
+    private void ReloadPopOut()
     {
         // Start reload sequence
-        reloading = true;
+        PopingOut = true;
         Invoke("ReloadFinished", reloadTime);
     }
 
     private void ReloadFinished()
     {
-        // Refill magazine
-        bulletsLeft = magazineSize;
-        reloading = false;
+        if(collectedGunPieces.Count>0)
+        {
+            PopGunPart();
+            AddPart(collectedGunPiecesObject[0]);
+            collectedGunPiecesObject.RemoveAt(0);
+            collectedGunPieces.RemoveAt(0);
+            bulletsLeft = magazineSize;
+        }
+        else
+        {
+            PopGunPart();
+            UpdateGunParts();
+        }
+        PopingOut = false;
+
     }
 
     private void PreloadBullets()
@@ -225,17 +253,7 @@ public class Gun_Base : NetworkBehaviour
         // All object spawning happens server side
         MultiplayerHandler.Instance.PreSpawnBullets(magazineSize, 0, this);
 
-        // Create a pool of bullets
-        //for (int i = 0; i < magazineSize; i++)
-        //{
-        //    GameObject bullet = Instantiate(bulletPrefab);
-
-        //    NetworkObject bulletNetObj = bullet.GetComponent<NetworkObject>();
-        //    bulletNetObj.Spawn(true);
-
-        //    bullet.SetActive(false);
-        //    bulletPool.Add(bullet);
-        //}
+      
     }
 
 
@@ -254,6 +272,11 @@ public class Gun_Base : NetworkBehaviour
         Debug.Log("Generating new bullet...");
         // Generate new bullet
         MultiplayerHandler.Instance.GenerateBullets(0, this);
+        UpdateBullet(bulletPool[bulletPool.Count - 1]);
+        foreach (GameObject bullet in bulletPool)
+        {
+            bullet.GetComponent<Bullet>().gun = this;
+        }
         // Return the newest bullet generated
         return bulletPool[bulletPool.Count - 1];
 
@@ -270,40 +293,80 @@ public class Gun_Base : NetworkBehaviour
     }
     public void PickUpPart(GameObject gun_Piece)
     {
-        if (collectedGunPieces.Count == 3)
+        if (activeGunPieces.Count == 3)
         {
-            PopGunPart();
+            collectedGunPiecesObject.Add(gun_Piece);
+            collectedGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
+            gun_Piece.SetActive(false);
         }
-        AddPart(gun_Piece);
+        else
+        {
+            AddPart(gun_Piece);
+            UpdateAllBullets();
+        }
     }
     public void PopGunPart()
     {
-        collectedGunPieces.RemoveAt(0);
-        GameObject gunOBJ = collectedGunPiecesObject[0];
-        collectedGunPiecesObject.RemoveAt(0);
+        activeGunPieces.RemoveAt(0);
+        GameObject gunOBJ = activeGunPiecesObject[0];
+        activeGunPiecesObject.RemoveAt(0);
         Destroy(gunOBJ);
 
     }
     public void AddPart(GameObject gun_Piece)
     {
-        collectedGunPiecesObject.Add(gun_Piece);
-        collectedGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
+        gun_Piece.SetActive(true);
+        activeGunPiecesObject.Add(gun_Piece);
+        activeGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
+        UpdateGunParts();
 
+
+    }
+
+    public void UpdateGunParts()
+    {
         //setUpvisuals
-        for (int i = 0; i < collectedGunPiecesObject.Count; i++)
+        for (int i = 0; i < activeGunPiecesObject.Count; i++)
         {
-            collectedGunPiecesObject[i].transform.parent = gunPartPositions[i];
-            collectedGunPiecesObject[i].transform.position = gunPartPositions[i].position;
-            collectedGunPiecesObject[i].transform.rotation = gunPartPositions[i].rotation;
+            activeGunPiecesObject[i].transform.parent = gunPartPositions[i];
+            activeGunPiecesObject[i].transform.position = gunPartPositions[i].position;
+            activeGunPiecesObject[i].transform.rotation = gunPartPositions[i].rotation;
 
             //SetData
-            collectedGunPieces[i].gun = this;
-            collectedGunPieces[i].UpdateState(i);
+            activeGunPieces[i].gun = this;
+            activeGunPieces[i].UpdateState(i);
 
         }
+        if(activeGunPieces.Count==3)
+        {
+            bulletsLeft = magazineSize;
+            UpdateAllBullets();
+        }
     }
+
     public NetworkObject GetNetworkObject()
     {
         return NetworkObject;
     }
+
+    public void UpdateAllBullets()
+    {
+        if (activeGunPieces[0] != null)
+        {
+            foreach (GameObject bullet in bulletPool)
+            {
+                bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0]);
+
+            }
+        }
+    }
+    public void UpdateBullet(GameObject bullet)
+    {
+      
+      bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0]);
+
+            
+        
+    }
+
 }

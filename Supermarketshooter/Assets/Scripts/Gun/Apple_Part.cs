@@ -17,20 +17,26 @@ public class Apple_Part : Gun_Piece_Base{
         {
             case GunPieceState.Forward:
                 gun.allowButtonHold = allowButtonHold;
-                gun.shootForce = shootForce;
                 gun.timeBetweenShooting = timeBetweenShooting;
-
-                // Example: Modify gun stats
-                break;
-            case GunPieceState.Mid:
-                Debug.Log("add health");
-                // Example: Neutral state
-                break;
-            case GunPieceState.Back:
+                gun.damage = damage;
                 gun.timeBetweenShots = timeBetweenShots;
                 gun.bulletsPerTap = bulletsPerTap;
                 gun.spread = spread;
+                // Example: Modify gun stats
+                break;
+            case GunPieceState.Mid:
+                gun.playerHealth.maxHealth = 200;
+                gun.playerHealth.currentHealth += 100;
+                Debug.Log("add damage");
+                // Example: Neutral state
+                break;
+            case GunPieceState.Back:
+                if (gun.playerHealth.currentHealth > 100)
+                    gun.playerHealth.currentHealth = 100;
+                gun.playerHealth.maxHealth = 100;
+                gun.shootForce = shootForce;
                 gun.magazineSize = magazineSize;
+                gun.isFiringBullets = true;
                 // Example: Debuff or different behavior
                 break;
         }

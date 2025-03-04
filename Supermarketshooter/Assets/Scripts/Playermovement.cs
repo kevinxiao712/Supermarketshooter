@@ -10,11 +10,14 @@ public class Playermovement : NetworkBehaviour
     public float walkSpeed;
     public float sprintSpeed;
     public float groundDrag;
+    public float butterGroundDrag;
+    private float baseGroundDrag;
     public float jumpforce;
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
-
+    [HideInInspector]
+    public bool isButtered = false;
 
     [Header("Keys")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -56,13 +59,15 @@ public class Playermovement : NetworkBehaviour
 
     public Gun_Base gun;
 
+    [Header("Falling")]
+    public float fallMultiplier = 5f;  // Tweak as needed
 
 
     [Header("Coyote Time")]
     public float coyoteTime = 0.2f;          // Duration to still allow jumping after stepping off
     private float coyoteTimeCounter;
 
-
+    public bool canMove = true;
 
     public enum MovementState
     {
@@ -77,7 +82,7 @@ public class Playermovement : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
-
+        baseGroundDrag = groundDrag;
         // checks if this player is the local one anything that would be set for
         // only this player should be set in this statement(camera, orientation, etc)
         if (IsLocalPlayer)
@@ -132,26 +137,32 @@ public class Playermovement : NetworkBehaviour
         // only allow the active player to control this object
         if (!IsOwner) return;
 
+
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
 
-        if (grounded)
+        if (grounded && !wasGrounded)
         {
+ 
             jumpCount = 0;
             coyoteTimeCounter = coyoteTime;
         }
-        else
+        else if (!grounded)
         {
-            // Decrease coyote time if not grounded
             coyoteTimeCounter -= Time.deltaTime;
         }
+
 
         wasGrounded = grounded;
 
 
 
+
         MyInput(); // adding hide ui to this
-        MovePlayer();
+        if (canMove)
+        {
+            MovePlayer();
+        }
         SpeedControl();
         StateHandler();
         if (grounded)
@@ -170,13 +181,25 @@ public class Playermovement : NetworkBehaviour
 
 
 
-        if (Input.GetKeyDown(jumpKey) && readyToJump && jumpCount < maxJumps && (grounded || coyoteTimeCounter > 0f))
+        if (Input.GetKeyDown(jumpKey) && jumpCount < maxJumps && readyToJump)
         {
-            coyoteTimeCounter = 0f;
-            readyToJump = false;
-            Jump();
-            jumpCount++; // We used a jump
-            Invoke(nameof(ResetJump), jumpCooldown);
+            Debug.Log("Jump pressed. jumpCount=" + jumpCount +
+  " | coyoteTimeCounter=" + coyoteTimeCounter +
+  " | readyToJump=" + readyToJump);
+            if (jumpCount == 0)
+            {
+
+                if (grounded || coyoteTimeCounter > 0f)
+                {
+                    DoTheJump();
+                }
+            }
+
+            else
+            {
+
+                DoTheJump();
+            }
         }
 
 
@@ -186,7 +209,14 @@ public class Playermovement : NetworkBehaviour
             ui.SetActive(!ui.activeInHierarchy);
         }
     }
-
+    void DoTheJump()
+    {
+        coyoteTimeCounter = 0f; 
+        readyToJump = false;
+        Jump();
+        jumpCount++;
+        Invoke(nameof(ResetJump), jumpCooldown);
+    }
     public void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
@@ -255,7 +285,16 @@ public class Playermovement : NetworkBehaviour
         return Vector3.ProjectOnPlane(moveDirection, slopHit.normal).normalized;
     }
 
+    private void FixedUpdate()
+    {
+        if (!IsOwner) return;
 
+
+        if (!grounded && !OnSlope() && rb.linearVelocity.y < 0)
+        {
+            rb.AddForce(Vector3.down * fallMultiplier, ForceMode.Acceleration);
+        }
+    }
     public void StateHandler()
     {
         if (grounded && Input.GetKey(sprintKey))
@@ -272,6 +311,22 @@ public class Playermovement : NetworkBehaviour
         {
             state = MovementState.air;
         }
+    }
+
+    public void GotButtered()
+    {
+        if (!isButtered)
+        {
+            StartCoroutine(ButterTimer());
+        }
+       
+    }
+
+    public IEnumerator ButterTimer()
+    {
+        groundDrag = butterGroundDrag;
+        yield return new WaitForSeconds(3);
+        groundDrag = baseGroundDrag;
     }
 
 }
