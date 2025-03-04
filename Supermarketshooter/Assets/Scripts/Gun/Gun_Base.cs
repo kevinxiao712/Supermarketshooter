@@ -34,7 +34,8 @@ public class Gun_Base : NetworkBehaviour
     public bool allowInvoke = true;
 
     // Pickup system
-    public NetworkVariable<List<Gun_Piece_Base>> activeGunPieces = new NetworkVariable<List<Gun_Piece_Base>>();
+    public NetworkVariable<int> activeGunPieceForBullet = new NetworkVariable<int>(0); // for Networking
+    public List<Gun_Piece_Base> activeGunPieces = new List<Gun_Piece_Base>();
     private List<GameObject> activeGunPiecesObject = new List<GameObject>();
     //holders;
     private List<Gun_Piece_Base> collectedGunPieces = new List<Gun_Piece_Base>();
@@ -317,8 +318,27 @@ public class Gun_Base : NetworkBehaviour
         activeGunPiecesObject.Add(gun_Piece);
         activeGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
         UpdateGunParts();
-
-
+        // Set networked var for shooting type
+        switch (activeGunPieces[0])
+        {
+            case Bottle_Part:
+                activeGunPieceForBullet.Value = 0;
+                break;
+            case Eggs_Part:
+                activeGunPieceForBullet.Value = 1;
+                break;
+            case Corn_Part:
+                activeGunPieceForBullet.Value = 2;
+                break;
+            case DrumStick_Part:
+                activeGunPieceForBullet.Value = 3;
+                break;
+            case Apple_Part:
+                activeGunPieceForBullet.Value = 4;
+                break;
+            default:
+                break;
+        }
     }
 
     public void UpdateGunParts()
@@ -333,7 +353,6 @@ public class Gun_Base : NetworkBehaviour
             //SetData
             activeGunPieces[i].gun = this;
             activeGunPieces[i].UpdateState(i);
-
         }
         if(activeGunPieces.Count==3)
         {
