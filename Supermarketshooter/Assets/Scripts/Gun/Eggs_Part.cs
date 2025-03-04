@@ -19,13 +19,14 @@ public class Eggs_Part : Gun_Piece_Base
                 break;
             case GunPieceState.Mid:
                 gun.DamageMuliplayer = 2;
-                gun.playerHealth.baseMaxHealth = 50;
+                gun.playerHealth.maxHealth = 50;
                 if (gun.playerHealth.currentHealth > 50)
                     gun.playerHealth.currentHealth = 50;
                 // Example: Neutral state
                 break;
             case GunPieceState.Back:
-                gun.playerHealth.baseMaxHealth = 100;
+                gun.playerHealth.maxHealth = 100;
+                gun.playerHealth.currentHealth += 50;
                 gun.DamageMuliplayer = 1;
                 gun.shootForce = shootForce;
                 gun.magazineSize = magazineSize;

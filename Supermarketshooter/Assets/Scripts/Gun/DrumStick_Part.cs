@@ -18,10 +18,12 @@ public class DrumStick_Part : Gun_Piece_Base
                 // Example: Modify gun stats
                 break;
             case GunPieceState.Mid:
+                gun.playermovement.maxJumps = 2;
                 Debug.Log("add damage");
                 // Example: Neutral state
                 break;
             case GunPieceState.Back:
+                gun.playermovement.maxJumps = 1;
                 gun.shootForce = shootForce;
                 gun.magazineSize = magazineSize;
                 gun.isFiringBullets = true;
