@@ -125,7 +125,7 @@ public class Playermovement : NetworkBehaviour
         }
         else
         {
-            fpsCam.gameObject.SetActive(false);
+            Destroy( fpsCam);
         }
     }
 
