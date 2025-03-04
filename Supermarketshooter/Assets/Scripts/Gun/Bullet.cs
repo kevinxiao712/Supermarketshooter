@@ -106,6 +106,7 @@ public class Bullet : NetworkBehaviour
     void Deactivate()
     {
         // gameObject.SetActive(false);
+        if (!NetworkObject.IsSpawned) return;
         NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
     }
     public void Explode()

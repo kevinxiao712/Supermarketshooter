@@ -196,8 +196,6 @@ public class Gun_Base : NetworkBehaviour
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         Bullet bullet = bulletNetObj.GetComponent<Bullet>();
 
-        Debug.Log(attackPoint.transform.position);
-
         bullet.transform.position = attackPoint.position;
         bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
         bullet.gameObject.SetActive(true);

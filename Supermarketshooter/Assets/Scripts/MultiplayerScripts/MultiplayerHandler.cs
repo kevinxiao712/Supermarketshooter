@@ -203,20 +203,30 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // Get bullet from pool
         NetworkObject netObj =
-            NetworkObjectPool.Singleton.GetNetworkObject(prefab, shooterGB.attackPoint.position, Quaternion.LookRotation(directionWithSpread));
+            NetworkObjectPool.Singleton.GetNetworkObject(prefab, shooterGB.attackPoint.position, Quaternion.identity);
 
         // Get bullet actual from network object reference
         Bullet bullet = netObj.GetComponent<Bullet>();
 
-        // prepare bullet to be returned to pool
+        // prepare bullet to be returned to pool realistically prefab can be set in bullet this is for prefab scalability
         bullet.prefab = prefab;
+
+        // Spawn bullet on the network only if its not alr there
+        if (!netObj.IsSpawned) netObj.Spawn(true);
 
         // Change bullet to what it should be based on shooters gun type
         bullet.GetComponent<Bullet>().SetNewType(shooterGB.activeGunPieces[0]);
 
         // damage mult from shooters gun
         bullet.GetComponent<Bullet>().damageMult = shooterGB.DamageMuliplayer;
-        // Change how bullet flys which is done in GunBase rn
+
+        // Change how bullet flys
+        bullet.transform.position = shooterGB.attackPoint.position;
+        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        bullet.gameObject.SetActive(true);
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
 
         //// Affect how bullet flys
         //bullet.transform.position = shooterGB.attackPoint.position;
@@ -232,7 +242,7 @@ public class MultiplayerHandler : NetworkBehaviour
     }
 
     // allows clients to spawn bullets on server
-    [Rpc(SendTo.Server)]
+    [Rpc(SendTo.Everyone)]
     public void SpawnBullets_RPC(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
     {
         SpawnBullets(bulletTypeIndex, shooterNetRef, directionWithSpread);
