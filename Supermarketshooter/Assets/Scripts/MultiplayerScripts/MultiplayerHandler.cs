@@ -211,14 +211,14 @@ public class MultiplayerHandler : NetworkBehaviour
         // prepare bullet to be returned to pool realistically prefab can be set in bullet this is for prefab scalability
         bullet.prefab = prefab;
 
-        // Spawn bullet on the network only if its not alr there
-        if (!netObj.IsSpawned) netObj.Spawn(true);
-
         // Change bullet to what it should be based on shooters gun type
         bullet.GetComponent<Bullet>().SetNewType(shooterGB.activeGunPieces[0]);
 
         // damage mult from shooters gun
         bullet.GetComponent<Bullet>().damageMult = shooterGB.DamageMuliplayer;
+
+        // Spawn bullet on the network only if its not alr there
+        if (!netObj.IsSpawned) netObj.Spawn(true);
 
         // Change how bullet flys
         bullet.transform.position = shooterGB.attackPoint.position;
@@ -242,7 +242,7 @@ public class MultiplayerHandler : NetworkBehaviour
     }
 
     // allows clients to spawn bullets on server
-    [Rpc(SendTo.Everyone)]
+    [Rpc(SendTo.Server)]
     public void SpawnBullets_RPC(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
     {
         SpawnBullets(bulletTypeIndex, shooterNetRef, directionWithSpread);
@@ -253,15 +253,16 @@ public class MultiplayerHandler : NetworkBehaviour
         ReturnToPool_RPC(bullet.NetworkObject, bulletPrefabIndex);
     }
 
-    [Rpc(SendTo.Everyone)]
+    [Rpc(SendTo.Server)]
     public void ReturnToPool_RPC(NetworkObjectReference bulletNetObjRef, int bulletPrefabIndex)
     {
         // Get bullet information
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
-        bulletNetObj.GetComponent<GameObject>().SetActive(false);
+        //bulletNetObj.GetComponent<GameObject>().SetActive(false);
 
         // return to pool
-        NetworkObjectPool.Singleton.ReturnNetworkObject(bulletNetObj, bulletList.listBullets[bulletPrefabIndex].GetComponent<GameObject>());
+        if (bulletNetObj.IsSpawned)
+            NetworkObjectPool.Singleton.ReturnNetworkObject(bulletNetObj, bulletList.listBullets[bulletPrefabIndex].GetComponent<GameObject>());
         //bulletNetObj.Despawn();
     }
 

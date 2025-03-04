@@ -40,6 +40,7 @@ public class Bullet : NetworkBehaviour
         bigSize = new Vector3(0.519999981f, 0.346014768f, 0.519999981f);
         originalSize = new Vector3(0.102316171f, 0.0680825114f, 0.102316171f);
         hits = new Collider[maxHits];
+        prefab = gameObject;
     }
     void OnEnable()
     {
@@ -107,7 +108,8 @@ public class Bullet : NetworkBehaviour
     {
         // gameObject.SetActive(false);
         if (!NetworkObject.IsSpawned) return;
-        NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
+
+        //MultiplayerHandler.Instance.PoolReturn(this, 0);
     }
     public void Explode()
     {
