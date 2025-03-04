@@ -1,18 +1,20 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 
-public class SeedGenManager : MonoBehaviour
+public class SeedGenManager : NetworkBehaviour
 {
     /// <summary>
     /// Seed used to restock the produce.
     /// </summary>
     public static int seed;
+    private NetworkVariable<int> netSeed = new NetworkVariable<int>(0);
 
     /// <summary>
     /// Bool for whether the player is the server host.
     /// </summary>
-    public bool isHost = false;
+    public bool isThisHost = false;
 
     /// <summary>
     /// The amount of time between restocks of the store.
@@ -33,15 +35,46 @@ public class SeedGenManager : MonoBehaviour
     private float spawnNumerator = 0;
 
     private void Start() {
-        
         // Host should be able to generate and init the seed;
         // Host should also send the seed to other players, who then also need to init the seed.
-        if (isHost) {
+        // Seed gen on start and the seed is then set for each other player afterwords
+            seed = GenerateNewSeed();
+            InitializeSeed(seed);
+            SendRestockSignalToAll();
+            StartCoroutine(RestockTimer(5));
+    }
+
+    /// <summary>
+    /// All players will call this upon starting which will set the seed to the host
+    /// cannot do this at Start() as there is not host at the start
+    /// </summary>
+    public void PlayerJoinOrHost()
+    {
+        if (IsHost)
+        {
             seed = GenerateNewSeed();
             InitializeSeed(seed);
             SendRestockSignalToAll();
             StartCoroutine(RestockTimer(5));
         }
+        else
+        {
+            MultiplayerHandler.Instance.GetHostSeed();
+        }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        netSeed.OnValueChanged += (int prevValue, int newValue) =>
+        {
+            SetSeed();
+        };
+    }
+
+    private void SetSeed()
+    {
+        InitializeSeed(seed);
+        SendRestockSignalToAll();
     }
 
     /// <summary>

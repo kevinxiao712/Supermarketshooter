@@ -79,6 +79,7 @@ public class Playermovement : NetworkBehaviour
 
     public void Start()
     {
+        FindFirstObjectByType<SeedGenManager>().PlayerJoinOrHost();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;

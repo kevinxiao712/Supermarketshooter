@@ -50,7 +50,7 @@ public class MultiplayerHandler : NetworkBehaviour
                 newBullet.SetActive(false);
 
                 // Add bullet to bullet list
-                AddToBulletListRPC(shooter, newBulletNetObj);
+                //AddToBulletListRPC(shooter, newBulletNetObj);
             }
         }
     }
@@ -104,5 +104,22 @@ public class MultiplayerHandler : NetworkBehaviour
 
             // Add to bullet pool on player
             gunBase.AddBulletToBulletPool(bullet);
+    }
+
+    public void GetHostSeed()
+    {
+        GetHostSeedRPC();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void GetHostSeedRPC()
+    {
+        SpreadHostSeedRPC(SeedGenManager.seed);
+    }
+
+    [Rpc(SendTo.NotServer)]
+    private void SpreadHostSeedRPC(int hostSeed)
+    {
+        SeedGenManager.seed = hostSeed;
     }
 }
