@@ -111,7 +111,10 @@ public class Gun_Base : NetworkBehaviour
     {
         // Check for shooting input
         if (activeGunPieces.Count < 3)
+        {
+            Debug.Log("less then 3"); 
             return;
+        }
 
         shooting = allowButtonHold ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
         
@@ -230,15 +233,19 @@ public class Gun_Base : NetworkBehaviour
     {
         if(collectedGunPieces.Count>0)
         {
+            PopGunPart();
             AddPart(collectedGunPiecesObject[0]);
             collectedGunPiecesObject.RemoveAt(0);
             collectedGunPieces.RemoveAt(0);
+            bulletsLeft = magazineSize;
         }
         else
         {
             PopGunPart();
             UpdateGunParts();
         }
+        PopingOut = false;
+
     }
 
     private void PreloadBullets()
@@ -292,8 +299,11 @@ public class Gun_Base : NetworkBehaviour
             collectedGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
             gun_Piece.SetActive(false);
         }
-        AddPart(gun_Piece);
-        UpdateAllBullets();
+        else
+        {
+            AddPart(gun_Piece);
+            UpdateAllBullets();
+        }
     }
     public void PopGunPart()
     {
@@ -305,6 +315,7 @@ public class Gun_Base : NetworkBehaviour
     }
     public void AddPart(GameObject gun_Piece)
     {
+        gun_Piece.SetActive(true);
         activeGunPiecesObject.Add(gun_Piece);
         activeGunPieces.Add(gun_Piece.GetComponent<Gun_Piece_Base>());
         UpdateGunParts();
