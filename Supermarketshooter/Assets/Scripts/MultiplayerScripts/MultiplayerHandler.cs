@@ -122,4 +122,10 @@ public class MultiplayerHandler : NetworkBehaviour
     {
         SeedGenManager.seed = hostSeed;
     }
+
+
+    public void Restock()
+    {
+
+    }
 }

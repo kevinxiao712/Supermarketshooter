@@ -117,6 +117,8 @@ public class SeedGenManager : NetworkBehaviour
         // Restock self
         Restock(1, 1, 1, 1, 1);
 
+        // should restock using MultiplayerHandler.Instance.Restock();
+
         // Send Restock signal to each other player.
         // TODO: Send signal to all players!
     }
