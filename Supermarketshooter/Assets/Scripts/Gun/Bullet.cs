@@ -72,7 +72,7 @@ public class Bullet : NetworkBehaviour
     public void SetNewType(Gun_Piece_Base part)
     {
         isExplosive = false;
-        gameObject.layer = 0;
+        gameObject.layer = 10;
         rb.useGravity = true;
         collider.material = normal;
         transform.localScale = originalSize;
