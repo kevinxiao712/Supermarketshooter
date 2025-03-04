@@ -45,8 +45,6 @@ public class Bullet : NetworkBehaviour
     {
     }
 
-   
-
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log(collision.gameObject.name);
@@ -107,6 +105,7 @@ public class Bullet : NetworkBehaviour
 
     void Deactivate()
     {
+        // gameObject.SetActive(false);
         NetworkObjectPool.Singleton.ReturnNetworkObject(NetworkObject, prefab);
     }
     public void Explode()

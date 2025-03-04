@@ -34,7 +34,7 @@ public class Gun_Base : NetworkBehaviour
     public bool allowInvoke = true;
 
     // Pickup system
-    private List<Gun_Piece_Base> activeGunPieces = new List<Gun_Piece_Base>();
+    public List<Gun_Piece_Base> activeGunPieces = new List<Gun_Piece_Base>();
     private List<GameObject> activeGunPiecesObject = new List<GameObject>();
     //holders;
     private List<Gun_Piece_Base> collectedGunPieces = new List<Gun_Piece_Base>();
@@ -99,14 +99,12 @@ public class Gun_Base : NetworkBehaviour
             }
             else if (hoveredPart != null)
             {
-
                 hoveredPart.gameObject.GetComponent<MeshRenderer>().material = oldMaterial;
                 hoveredPart = null;
             }
-
         }
-
     }
+
     private void HandleInput()
     {
         // Check for shooting input
@@ -156,12 +154,14 @@ public class Gun_Base : NetworkBehaviour
 
         if (isFiringBullets)
         { // Retrieve a bullet from the pool
-            GameObject bullet = GetBullet();
-            bullet.GetComponent<Bullet>().damageMult = DamageMuliplayer;
-            ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
+
+            MultiplayerHandler.Instance.SpawnBullets_RPC(0, NetworkObject, directionWithSpread);
+
+            //GameObject bullet = GetBullet();
+            //bullet.GetComponent<Bullet>().damageMult = DamageMuliplayer;
+            //ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
         }
 
-        MultiplayerHandler.Instance.SpawnBullets_RPC(0, NetworkObject, directionWithSpread);
 
         // Instantiate muzzle flash if available
         if (muzzleFlash != null)
@@ -356,17 +356,12 @@ public class Gun_Base : NetworkBehaviour
             foreach (GameObject bullet in bulletPool)
             {
                 bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0]);
-
             }
         }
     }
+
     public void UpdateBullet(GameObject bullet)
     {
-      
       bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0]);
-
-            
-        
     }
-
 }

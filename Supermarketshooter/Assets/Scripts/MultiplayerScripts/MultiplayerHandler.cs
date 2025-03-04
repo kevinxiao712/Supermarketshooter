@@ -161,7 +161,6 @@ public class MultiplayerHandler : NetworkBehaviour
         EveryoneChangeBulletTransform_RPC(bulletNetObjRef, directionWithSpread, shooterNetRef);
     }
 
-
     [Rpc(SendTo.ClientsAndHost)]
     private void EveryoneChangeBulletTransform_RPC(NetworkObjectReference bulletNetObjRef, Vector3 directionWithSpread, NetworkObjectReference shooterNetRef)
     {
@@ -211,7 +210,12 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // prepare bullet to be returned to pool
         bullet.prefab = prefab;
-        
+
+        // Change bullet to what it should be based on shooters gun type
+        bullet.GetComponent<Bullet>().SetNewType(shooterGB.activeGunPieces[0]);
+
+        // damage mult from shooters gun
+        bullet.GetComponent<Bullet>().damageMult = shooterGB.DamageMuliplayer;
         // Change how bullet flys which is done in GunBase rn
 
         //// Affect how bullet flys
