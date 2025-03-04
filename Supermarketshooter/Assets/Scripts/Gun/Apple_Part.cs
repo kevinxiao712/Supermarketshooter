@@ -25,10 +25,15 @@ public class Apple_Part : Gun_Piece_Base{
                 // Example: Modify gun stats
                 break;
             case GunPieceState.Mid:
+                gun.playerHealth.baseMaxHealth = 200;
+                gun.playerHealth.currentHealth += 100;
                 Debug.Log("add damage");
                 // Example: Neutral state
                 break;
             case GunPieceState.Back:
+                if (gun.playerHealth.currentHealth > 100)
+                    gun.playerHealth.currentHealth = 100;
+                gun.playerHealth.baseMaxHealth = 100;
                 gun.shootForce = shootForce;
                 gun.magazineSize = magazineSize;
                 gun.isFiringBullets = true;
