@@ -15,7 +15,7 @@ public class MultiplayerHandler : NetworkBehaviour
 
     private void Start()
     {
-        NetworkManager.Singleton.OnClientStarted += SpawnBulletsStart;
+        // NetworkManager.Singleton.OnClientStarted += SpawnBulletsStart;
     }
 
     private void Awake()
@@ -187,13 +187,16 @@ public class MultiplayerHandler : NetworkBehaviour
         rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
     }
 
-    private void SpawnBulletsStart()
+    /// <summary>
+    /// preload the bullet pool
+    /// </summary>
+    public void SpawnBulletsStart()
     {
         NetworkObjectPool.Singleton.OnNetworkSpawn();
     }
 
     // Actual creation of bullets
-    public void SpawnBullets(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
+    private void SpawnBullets(int bulletTypeIndex, NetworkObjectReference shooterNetRef, Vector3 directionWithSpread)
     {
         // Bullet bulletPrefab = bulletList.listBullets[bulletTypeIndex];
 

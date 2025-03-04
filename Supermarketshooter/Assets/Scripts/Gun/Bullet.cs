@@ -5,7 +5,7 @@ public class Bullet : NetworkBehaviour
 {
     public float lifetime = 8f;
     public Rigidbody rb;
-    public int damage;
+    public int damage = 2;
     public Gun_Base gun;
     Collider collider;
     public PhysicsMaterial normal;

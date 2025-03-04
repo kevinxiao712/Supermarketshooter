@@ -79,7 +79,11 @@ public class Playermovement : NetworkBehaviour
 
     public void Start()
     {
+        // set up seed generation
         FindFirstObjectByType<SeedGenManager>().PlayerJoinOrHost();
+        // get bullets
+        MultiplayerHandler.Instance.SpawnBulletsStart();
+
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
