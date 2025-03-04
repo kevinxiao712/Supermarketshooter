@@ -35,6 +35,8 @@ public class Gun_Base : NetworkBehaviour
 
     // Pickup system
     public NetworkVariable<int> activeGunPieceForBullet = new NetworkVariable<int>(0); // for Networking
+    public NetworkVariable<int> activeGunPieceForDamage = new NetworkVariable<int>(0); // for Networking
+
     public List<Gun_Piece_Base> activeGunPieces = new List<Gun_Piece_Base>();
     private List<GameObject> activeGunPiecesObject = new List<GameObject>();
     //holders;
@@ -339,6 +341,27 @@ public class Gun_Base : NetworkBehaviour
             default:
                 break;
         }
+        switch (activeGunPieces[2])
+        {
+            case Bottle_Part:
+                activeGunPieceForDamage.Value = 0;
+                break;
+            case Eggs_Part:
+                activeGunPieceForDamage.Value = 1;
+                break;
+            case Corn_Part:
+                activeGunPieceForDamage.Value = 2;
+                break;
+            case DrumStick_Part:
+                activeGunPieceForDamage.Value = 3;
+                break;
+            case Apple_Part:
+                activeGunPieceForDamage.Value = 4;
+                break;
+            default:
+                break;
+        }
+        
     }
 
     public void UpdateGunParts()
@@ -372,13 +395,13 @@ public class Gun_Base : NetworkBehaviour
         {
             foreach (GameObject bullet in bulletPool)
             {
-                bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0]);
+                bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0], activeGunPieces[2]);
             }
         }
     }
 
     public void UpdateBullet(GameObject bullet)
     {
-      bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0]);
+      bullet.GetComponent<Bullet>().SetNewType(activeGunPieces[0], activeGunPieces[2]);
     }
 }

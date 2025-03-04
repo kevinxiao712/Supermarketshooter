@@ -2717,13 +2717,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      propertyPath: allSpawnData.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      propertyPath: allSpawnData.Array.data[3].probability
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      propertyPath: allSpawnData.Array.data[4].probability
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
       propertyPath: allSpawnData.Array.data[2].produceReference
       value: 
       objectReference: {fileID: 2905122375049709244, guid: 6593baedc0d3cda4f805199ba47bc42a, type: 3}
+    - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      propertyPath: allSpawnData.Array.data[3].produceReference
+      value: 
+      objectReference: {fileID: 8092072396121529214, guid: 5fdf5721e37f0bc4c8d33153e5cbbebd, type: 3}
+    - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      propertyPath: allSpawnData.Array.data[4].produceReference
+      value: 
+      objectReference: {fileID: 3083733224791895580, guid: c916209fb4c6f934e911924419a87b82, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 40527435344282523, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 675837562}
   m_SourcePrefab: {fileID: 100100000, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
 --- !u!1001 &387097932
 PrefabInstance:
@@ -5337,6 +5360,36 @@ Transform:
   - {fileID: 2086518284}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &675837559 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 40527435344282523, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+  m_PrefabInstance: {fileID: 378141688}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &675837562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675837559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3568561981
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &676496745
 GameObject:
   m_ObjectHideFlags: 0

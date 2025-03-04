@@ -214,31 +214,53 @@ public class MultiplayerHandler : NetworkBehaviour
         // prepare bullet to be returned to pool realistically prefab can be set in bullet this is for prefab scalability
         bullet.prefab = prefab;
 
-        Gun_Piece_Base part = new Apple_Part();
+        Gun_Piece_Base bulletPart = new Apple_Part();
+        Gun_Piece_Base damagePart = new Apple_Part();
+
         // Get bullet type from activeGunPieceForBullet enum
         switch (shooterGB.activeGunPieceForBullet.Value)
         {
             case 0:
-                part = new Bottle_Part();
+                bulletPart = new Bottle_Part();
                 break;
             case 1:
-                part = new Eggs_Part();
+                bulletPart = new Eggs_Part();
                 break;
             case 2:
-                part = new Corn_Part();
+                bulletPart = new Corn_Part();
                 break;
             case 3:
-                part = new DrumStick_Part();
+                bulletPart = new DrumStick_Part();
                 break;
             case 4:
-                part = new Apple_Part();
+                bulletPart = new Apple_Part();
+                break;
+            default:
+                break;
+        }
+        switch (shooterGB.activeGunPieceForDamage.Value)
+        {
+            case 0:
+                damagePart = new Bottle_Part();
+                break;
+            case 1:
+                damagePart = new Eggs_Part();
+                break;
+            case 2:
+                damagePart = new Corn_Part();
+                break;
+            case 3:
+                damagePart = new DrumStick_Part();
+                break;
+            case 4:
+                damagePart = new Apple_Part();
                 break;
             default:
                 break;
         }
 
         // Change bullet to what it should be based on shooters gun type
-        bullet.GetComponent<Bullet>().SetNewType(part);
+        bullet.GetComponent<Bullet>().SetNewType(bulletPart, damagePart);
 
         // damage mult from shooters gun
         bullet.GetComponent<Bullet>().damageMult = shooterGB.DamageMuliplayer;

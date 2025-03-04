@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections.Generic;
 
 public class Bullet : NetworkBehaviour
 {
@@ -70,7 +71,7 @@ public class Bullet : NetworkBehaviour
         // 4) Deactivate the bullet (whether it hits a player or something else)
             Deactivate();
     }
-    public void SetNewType(Gun_Piece_Base part)
+    public void SetNewType(Gun_Piece_Base partBullet, Gun_Piece_Base partDamage)
     {
         isExplosive = false;
         gameObject.layer = 10;
@@ -78,7 +79,7 @@ public class Bullet : NetworkBehaviour
         collider.material = normal;
         transform.localScale = originalSize;
         
-        switch (part)
+        switch (partBullet)
         {
             case Bottle_Part:
                 rb.useGravity = false;
@@ -102,14 +103,15 @@ public class Bullet : NetworkBehaviour
             default:
                 break;
         }
+        damage = (int)partDamage.damage;
     }
 
     void Deactivate()
     {
-        // gameObject.SetActive(false);
+         gameObject.SetActive(false);
         if (!NetworkObject.IsSpawned) return;
 
-        //MultiplayerHandler.Instance.PoolReturn(this, 0);
+        MultiplayerHandler.Instance.PoolReturn(this, 0);
     }
     public void Explode()
     {
