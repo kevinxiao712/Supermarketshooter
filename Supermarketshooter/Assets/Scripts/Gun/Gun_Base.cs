@@ -67,7 +67,7 @@ public class Gun_Base : NetworkBehaviour
     public void Start()
     {
         if (!IsOwner) return;
-        PreloadBullets();
+        // PreloadBullets();
         transform.parent = fpsCam.transform;
     }
 
