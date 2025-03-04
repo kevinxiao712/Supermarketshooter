@@ -9,7 +9,13 @@ public class PlayerHealth : MonoBehaviour
     public int currentHealth;
 
     [Header("UI References")]
-    public Slider healthSlider; 
+    public Slider healthSlider;
+
+
+    [Header("Randomized Objects")]
+    public GameObject[] randomObjects;
+
+
 
     private PlayerHealth playerHealth; 
 
@@ -47,6 +53,26 @@ public class PlayerHealth : MonoBehaviour
             healthSlider.maxValue = 1f;
             healthSlider.value = 1f;
         }
+
+        if (randomObjects != null && randomObjects.Length > 0)
+        {
+            // Disable all first (so only one ends up active)
+            foreach (GameObject obj in randomObjects)
+            {
+                obj.SetActive(false);
+            }
+
+            // Pick one index from 0 to randomObjects.Length - 1
+            int randomIndex = Random.Range(0, randomObjects.Length);
+            randomObjects[randomIndex].SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("No randomObjects assigned or array is empty!");
+        }
+
+
+
 
         // Find all respawn points dynamically
         GameObject[] respawnObjects = GameObject.FindGameObjectsWithTag("Respawn");
