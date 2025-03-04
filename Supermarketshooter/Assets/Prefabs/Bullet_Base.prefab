@@ -181,7 +181,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   lifetime: 2.15
   rb: {fileID: 0}
-  damage: 0
+  damage: 20
   gun: {fileID: 0}
   normal: {fileID: 13400000, guid: 96bfcb7d68d66af42b9fba8514ffa3bc, type: 2}
   bouncy: {fileID: 13400000, guid: b278084f5b9ede24c9d064ffdb23baff, type: 2}

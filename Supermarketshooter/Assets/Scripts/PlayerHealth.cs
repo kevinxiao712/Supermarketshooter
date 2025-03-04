@@ -118,6 +118,7 @@ public class PlayerHealth : MonoBehaviour
         if (healthSlider != null)
         {
             healthSlider.value = (float)currentHealth / maxHealth;
+          
         }
         Debug.Log("Player healed, current health: " + currentHealth);
     }
@@ -173,5 +174,6 @@ public class PlayerHealth : MonoBehaviour
         {
             rb.isKinematic = false;
         }
+        deadText.SetActive(false);
     }
 }
