@@ -233,19 +233,35 @@ public class MultiplayerHandler : NetworkBehaviour
         SpawnBullets(bulletTypeIndex, shooterNetRef, directionWithSpread);
     }
 
-    public void PoolReturn(Bullet bullet)
+    public void PoolReturn(Bullet bullet, int bulletPrefabIndex)
     {
-        ReturnToPool_RPC(bullet.NetworkObject);
+        ReturnToPool_RPC(bullet.NetworkObject, bulletPrefabIndex);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    public void ReturnToPool_RPC(NetworkObjectReference bulletNetObjRef)
+    [Rpc(SendTo.Everyone)]
+    public void ReturnToPool_RPC(NetworkObjectReference bulletNetObjRef, int bulletPrefabIndex)
     {
         // Get bullet information
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        bulletNetObj.GetComponent<GameObject>().SetActive(false);
 
         // return to pool
-        NetworkObjectPool.Singleton.ReturnNetworkObject(bulletNetObj, prefab);
+        NetworkObjectPool.Singleton.ReturnNetworkObject(bulletNetObj, bulletList.listBullets[bulletPrefabIndex].GetComponent<GameObject>());
         //bulletNetObj.Despawn();
+    }
+
+    [Rpc(SendTo.Server)]
+    public void SetBulletFalse_RPC(NetworkObjectReference bulletNetObjRef)
+    {
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(false);
+        SetBulletFalseEveryone_RPC(bulletNetObjRef);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void SetBulletFalseEveryone_RPC(NetworkObjectReference bulletNetObjRef)
+    {
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(false);
     }
 }
