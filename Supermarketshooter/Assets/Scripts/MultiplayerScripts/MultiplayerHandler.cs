@@ -207,7 +207,6 @@ public class MultiplayerHandler : NetworkBehaviour
 
         // prepare bullet to be returned to pool
         bullet.prefab = prefab;
-        
 
         // Get shooter information
         shooterNetRef.TryGet(out NetworkObject shooterNetObj);
@@ -253,9 +252,13 @@ public class MultiplayerHandler : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void SetBulletFalse_RPC(NetworkObjectReference bulletNetObjRef)
     {
-        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
-        bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(false);
         SetBulletFalseEveryone_RPC(bulletNetObjRef);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void SetBulletTrue_RPC(NetworkObjectReference bulletNetObjRef)
+    {
+        SetBulletTrueEveryone_RPC(bulletNetObjRef);
     }
 
     [Rpc(SendTo.Everyone)]
@@ -263,5 +266,12 @@ public class MultiplayerHandler : NetworkBehaviour
     {
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(false);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void SetBulletTrueEveryone_RPC(NetworkObjectReference bulletNetObjRef)
+    {
+        bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
+        bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(true);
     }
 }
