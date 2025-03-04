@@ -214,8 +214,31 @@ public class MultiplayerHandler : NetworkBehaviour
         // prepare bullet to be returned to pool realistically prefab can be set in bullet this is for prefab scalability
         bullet.prefab = prefab;
 
+        Gun_Piece_Base part = new Apple_Part();
+        // Get bullet type from activeGunPieceForBullet enum
+        switch (shooterGB.activeGunPieceForBullet.Value)
+        {
+            case 0:
+                part = new Bottle_Part();
+                break;
+            case 1:
+                part = new Eggs_Part();
+                break;
+            case 2:
+                part = new Corn_Part();
+                break;
+            case 3:
+                part = new DrumStick_Part();
+                break;
+            case 4:
+                part = new Apple_Part();
+                break;
+            default:
+                break;
+        }
+
         // Change bullet to what it should be based on shooters gun type
-        bullet.GetComponent<Bullet>().SetNewType(shooterGB.activeGunPieces[0]);
+        bullet.GetComponent<Bullet>().SetNewType(part);
 
         // damage mult from shooters gun
         bullet.GetComponent<Bullet>().damageMult = shooterGB.DamageMuliplayer;
