@@ -263,6 +263,25 @@ public class MultiplayerHandler : NetworkBehaviour
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(false);
     }
+    public void GetHostSeed()
+    {
+        GetHostSeedRPC();
+    }
 
+    [Rpc(SendTo.Server)]
+    private void GetHostSeedRPC()
+    {
+        SpreadHostSeedRPC(SeedGenManager.seed);
+    }
 
+    [Rpc(SendTo.NotServer)]
+    private void SpreadHostSeedRPC(int hostSeed)
+    {
+        SeedGenManager.seed = hostSeed;
+    }
+
+    public void Restock()
+    {
+
+    }
 }
