@@ -397,12 +397,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4076695607f9c114d93d0f87553f4fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  baseMaxHealth: 100
+  maxHealth: 100
   currentHealth: 0
   healthSlider: {fileID: 0}
   respawnDelay: 2
-  hasExtraHealthAndRegen: 0
+  deadText: {fileID: 0}
 --- !u!1 &6640568356304540784
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,9 +19,9 @@ public class Gun_Base : NetworkBehaviour
 
     // Internal tracking variables
     private int bulletsLeft, bulletsShot;
-    private bool shooting, readyToShoot, PopingOut;
+    private bool shooting, readyToShoot;
     private List<GameObject> bulletPool = new List<GameObject>();
-
+    public bool PopingOut;
     // Recoil settings
     public Rigidbody playerRb;
     public float recoilForce;
@@ -339,6 +339,7 @@ public class Gun_Base : NetworkBehaviour
         }
         if(activeGunPieces.Count==3)
         {
+            bulletsLeft = magazineSize;
             UpdateAllBullets();
         }
     }
