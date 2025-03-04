@@ -198,31 +198,33 @@ public class MultiplayerHandler : NetworkBehaviour
     {
         // Bullet bulletPrefab = bulletList.listBullets[bulletTypeIndex];
 
+        // Get shooter information
+        shooterNetRef.TryGet(out NetworkObject shooterNetObj);
+        Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
+
         // Get bullet from pool
         NetworkObject netObj =
-            NetworkObjectPool.Singleton.GetNetworkObject(prefab, new Vector3(0, 3, 0), Quaternion.identity);
+            NetworkObjectPool.Singleton.GetNetworkObject(prefab, shooterGB.attackPoint.position, Quaternion.LookRotation(directionWithSpread));
 
         // Get bullet actual from network object reference
         Bullet bullet = netObj.GetComponent<Bullet>();
 
         // prepare bullet to be returned to pool
         bullet.prefab = prefab;
+        
+        // Change how bullet flys which is done in GunBase rn
 
-        // Get shooter information
-        shooterNetRef.TryGet(out NetworkObject shooterNetObj);
-        Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
+        //// Affect how bullet flys
+        //bullet.transform.position = shooterGB.attackPoint.position;
+        //bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
 
-        // Affect how bullet flys
-        bullet.transform.position = shooterGB.attackPoint.position;
-        bullet.transform.rotation = Quaternion.LookRotation(directionWithSpread);
+        //// spawn the bullet 
+        //if (!netObj.IsSpawned) netObj.Spawn(true);
+        //bullet.Invoke("Deactivate", bullet.lifetime); // start despawn countdown
 
-        // spawn the bullet 
-        if (!netObj.IsSpawned) netObj.Spawn(true);
-        bullet.Invoke("Deactivate", bullet.lifetime); // start despawn countdown
-
-        // Apply force to bullet
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
+        //// Apply force to bullet
+        //Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        //rb.linearVelocity = directionWithSpread.normalized * shooterGB.shootForce + shooterGB.fpsCam.transform.up * shooterGB.upwardForce;
     }
 
     // allows clients to spawn bullets on server

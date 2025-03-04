@@ -254,10 +254,7 @@ public class Gun_Base : NetworkBehaviour
     {
         // All object spawning happens server side
         MultiplayerHandler.Instance.PreSpawnBullets(magazineSize, 0, this);
-
-      
     }
-
 
     private GameObject GetBullet()
     {
@@ -293,6 +290,7 @@ public class Gun_Base : NetworkBehaviour
     {
         bulletPool.Add(bulletToAdd);
     }
+
     public void PickUpPart(GameObject gun_Piece)
     {
         if (activeGunPieces.Count == 3)
