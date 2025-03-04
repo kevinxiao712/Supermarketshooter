@@ -38,7 +38,7 @@ public class Playermovement : NetworkBehaviour
     private bool wasGrounded = true;
 
     [Header("Double Jump")]
-    public int maxJumps = 2;            // How many times we can jump before touching the ground
+    public int maxJumps = 1;            // How many times we can jump before touching the ground
     private int jumpCount = 0;
 
     [Header("Slope Hnadling")]

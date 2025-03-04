@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -1412091334802369846}
   - component: {fileID: 2679933001069176032}
   - component: {fileID: -8588685515126589666}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bullet_Base
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -185,6 +185,7 @@ MonoBehaviour:
   gun: {fileID: 0}
   normal: {fileID: 13400000, guid: 96bfcb7d68d66af42b9fba8514ffa3bc, type: 2}
   bouncy: {fileID: 13400000, guid: b278084f5b9ede24c9d064ffdb23baff, type: 2}
+  damageMult: 0
   isExplosive: 0
   ParticleSystemPrefab: {fileID: 198656289721292014, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
   maxHits: 25
