@@ -160,7 +160,9 @@ public class Gun_Base : NetworkBehaviour
             bullet.GetComponent<Bullet>().damageMult = DamageMuliplayer;
             ServerChangeBulletTransformRPC(bullet.GetComponent<NetworkObject>(), directionWithSpread);
         }
-       
+
+        MultiplayerHandler.Instance.SpawnBullets_RPC(0, NetworkObject, directionWithSpread);
+
         // Instantiate muzzle flash if available
         if (muzzleFlash != null)
             Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
