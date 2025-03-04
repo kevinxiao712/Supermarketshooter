@@ -45,6 +45,8 @@ public class Bullet : NetworkBehaviour
     {
     }
 
+   
+
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log(collision.gameObject.name);

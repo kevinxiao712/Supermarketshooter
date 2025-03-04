@@ -314,7 +314,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   orientation: {fileID: 5355502365269865072}
-  maxJumps: 2
+  maxJumps: 1
   maxSlopeAngle: 45
   state: 0
   playerCamScript: {fileID: 0}
