@@ -208,7 +208,6 @@ public class MultiplayerHandler : NetworkBehaviour
         // prepare bullet to be returned to pool
         bullet.prefab = prefab;
         
-
         // Get shooter information
         shooterNetRef.TryGet(out NetworkObject shooterNetObj);
         Gun_Base shooterGB = shooterNetObj.GetComponentInChildren<Gun_Base>();
@@ -264,4 +263,6 @@ public class MultiplayerHandler : NetworkBehaviour
         bulletNetObjRef.TryGet(out NetworkObject bulletNetObj);
         bulletNetObj.GetComponent<Bullet>().gameObject.SetActive(false);
     }
+
+
 }

@@ -13,7 +13,7 @@ public class Bullet : NetworkBehaviour
      Vector3 originalSize;
      Vector3 bigSize;
     public int damageMult = 1;
-
+    public GameObject prefab;
 
 
     /// <summary>
