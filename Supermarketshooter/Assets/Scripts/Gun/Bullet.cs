@@ -103,7 +103,7 @@ public class Bullet : NetworkBehaviour
             default:
                 break;
         }
-        damage = (int)partDamage.damage;
+      //  damage = (int)partDamage.damage;
     }
 
     void Deactivate()

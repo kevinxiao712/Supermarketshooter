@@ -238,26 +238,7 @@ public class MultiplayerHandler : NetworkBehaviour
             default:
                 break;
         }
-        switch (shooterGB.activeGunPieceForDamage.Value)
-        {
-            case 0:
-                damagePart = new Bottle_Part();
-                break;
-            case 1:
-                damagePart = new Eggs_Part();
-                break;
-            case 2:
-                damagePart = new Corn_Part();
-                break;
-            case 3:
-                damagePart = new DrumStick_Part();
-                break;
-            case 4:
-                damagePart = new Apple_Part();
-                break;
-            default:
-                break;
-        }
+      
 
         // Change bullet to what it should be based on shooters gun type
         bullet.GetComponent<Bullet>().SetNewType(bulletPart, damagePart);
