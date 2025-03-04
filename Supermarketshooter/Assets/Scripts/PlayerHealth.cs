@@ -18,6 +18,8 @@ public class PlayerHealth : MonoBehaviour
     private Transform[] respawnPoints;
     private bool isRespawning = false;
 
+    [Header("Death Text")]
+    public GameObject deadText;
 
     private Playermovement playerMovement;
     private Rigidbody rb;
@@ -26,6 +28,11 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         playerMovement = GetComponent<Playermovement>();
         rb = GetComponent<Rigidbody>();
+
+        if (deadText != null)
+        {
+            deadText.SetActive(false);
+        }
         if (healthSlider == null)
         {
             GameObject sliderObj = GameObject.FindGameObjectWithTag("Health");
@@ -92,6 +99,12 @@ public class PlayerHealth : MonoBehaviour
     private IEnumerator Respawn()
     {
         isRespawning = true;
+
+
+        if (deadText != null)
+        {
+            deadText.SetActive(true);
+        }
         Debug.Log("Player has died. Respawning in " + respawnDelay + " seconds...");
         if (playerMovement != null)
         {
