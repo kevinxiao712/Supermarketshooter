@@ -34,7 +34,7 @@ public class Gun_Base : NetworkBehaviour
     public bool allowInvoke = true;
 
     // Pickup system
-    public List<Gun_Piece_Base> activeGunPieces = new List<Gun_Piece_Base>();
+    public NetworkVariable<List<Gun_Piece_Base>> activeGunPieces = new NetworkVariable<List<Gun_Piece_Base>>();
     private List<GameObject> activeGunPiecesObject = new List<GameObject>();
     //holders;
     private List<Gun_Piece_Base> collectedGunPieces = new List<Gun_Piece_Base>();
