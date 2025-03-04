@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : NetworkBehaviour
 {
     [Header("Health Settings")]
     public int maxHealth = 100;
@@ -91,6 +92,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (!IsOwner) return;
         if (isRespawning) return; // Prevent taking damage while respawning
 
         currentHealth -= damage;
