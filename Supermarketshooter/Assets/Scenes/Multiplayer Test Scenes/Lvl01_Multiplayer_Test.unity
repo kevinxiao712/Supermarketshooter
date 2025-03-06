@@ -383,6 +383,7 @@ MonoBehaviour:
   rainSystem: {fileID: 1617817185}
   sunLight: {fileID: 1393126909}
   currentWeather: 0
+  seedGenManager: {fileID: 1903029879}
   clearSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   cloudySkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   rainSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
@@ -2771,6 +2772,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 490466030391905895, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+      propertyPath: allProduceSpawners.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
@@ -14159,6 +14164,17 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1903029879 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8416260670118794021, guid: d4b4a8bb6a845ce46b36946fbfb3fe47, type: 3}
+  m_PrefabInstance: {fileID: 378141688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8275a77e7b01c164abd54f0e211724d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1910269612
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16489,7 +16505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
       propertyPath: InitialModule.gravityModifier.scalar
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5423743828031123623, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
       propertyPath: m_Name

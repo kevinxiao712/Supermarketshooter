@@ -14,7 +14,7 @@ public class WeatherController : MonoBehaviour
     public WeatherType currentWeather = WeatherType.Clear;
 
 
-
+    public SeedGenManager seedGenManager;
     public Material clearSkybox;
     public Material cloudySkybox;
     public Material rainSkybox;
@@ -91,6 +91,11 @@ public class WeatherController : MonoBehaviour
                 }
 
                 break;
+        }
+
+        if (seedGenManager != null)
+        {
+            seedGenManager.UpdateSpawnChances(newWeather);
         }
     }
 }
