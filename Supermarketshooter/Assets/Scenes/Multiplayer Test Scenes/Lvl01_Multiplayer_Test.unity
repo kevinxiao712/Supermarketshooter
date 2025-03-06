@@ -351,6 +351,63 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 44322297}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &47559822
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 47559824}
+  - component: {fileID: 47559823}
+  m_Layer: 0
+  m_Name: WeatherManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &47559823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47559822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0627964420480294e9b4802d001e2eb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rainSystem: {fileID: 1617817185}
+  sunLight: {fileID: 1393126909}
+  currentWeather: 0
+  clearSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  cloudySkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  rainSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  clearLightColor: {r: 1, g: 1, b: 1, a: 1}
+  clearIntensity: 1
+  rainLightColor: {r: 0.7, g: 0.7, b: 0.8, a: 1}
+  rainIntensity: 0.6
+  cloudyLightColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  cloudyIntensity: 0.8
+  weatherChangeInterval: 15
+--- !u!4 &47559824
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47559822}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &49361190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11876,6 +11933,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1614894489}
   m_CullTransparentMesh: 1
+--- !u!198 &1617817185 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+  m_PrefabInstance: {fileID: 1279773059175333014}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1619573310
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16401,6 +16463,83 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 901a5f8e6901d1943b2f8d70412eb8c6, type: 3}
+--- !u!1001 &1279773059175333014
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 5000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516947814103145457, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5423743828031123623, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_Name
+      value: Rain
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.7501895
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 21.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8796525699205246044, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: dab5dbc4725f0fd44979181e2393897e, type: 3}
 --- !u!1001 &5841990606932568550
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16481,3 +16620,5 @@ SceneRoots:
   - {fileID: 672695535}
   - {fileID: 378141688}
   - {fileID: 538320261}
+  - {fileID: 47559824}
+  - {fileID: 1279773059175333014}
