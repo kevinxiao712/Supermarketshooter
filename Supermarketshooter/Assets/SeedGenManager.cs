@@ -165,7 +165,23 @@ public class SeedGenManager : NetworkBehaviour
         }
 
     }
+    public void UpdateSpawnChances(WeatherController.WeatherType weather)
+    {
+        switch (weather)
+        {
+            case WeatherController.WeatherType.Clear:
+                Restock(0.4f, 0.3f, 0.2f, 0.1f, 0.05f); // More apples and corn on sunny days
+                break;
 
+            case WeatherController.WeatherType.Rain:
+                Restock(0.1f, 0.2f, 0.4f, 0.3f, 0.15f); // More drumsticks and eggs on rainy days
+                break;
+
+            case WeatherController.WeatherType.Cloudy:
+                Restock(0.2f, 0.3f, 0.3f, 0.2f, 0.1f); // Balanced spawn chance
+                break;
+        }
+    }
 
     public IEnumerator RestockTimer(float restockTimer) {
         yield return new WaitForSeconds(restockTimer);
